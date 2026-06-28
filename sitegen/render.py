@@ -24,6 +24,14 @@ def render_page(page: Page, include_hero: bool = False, asset_url: str | None = 
     schema = webpage_schema(page.title, page.meta_description, page.canonical, page.breadcrumb)
     schema[0]["primaryImageOfPage"]["url"] = absolute_image_url(representative_image)
     image_context_url = asset_url or page.url
+    body_html = (
+        f"{render_hero(page, image_context_url)}"
+        f"{render_content(page)}"
+        f"{render_fixed_image_stack(page.title, image_context_url)}"
+        f'<section class="content-grid">{"".join(render_link_section(heading, links) for heading, links in page.sections if links)}</section>'
+        if include_hero
+        else render_detail_page_body(page, image_context_url)
+    )
     html = f"""<!doctype html>
 <html lang="ko">
 <head>
@@ -44,12 +52,7 @@ def render_page(page: Page, include_hero: bool = False, asset_url: str | None = 
   </header>
   <main id="main">
     <nav class="breadcrumbs" aria-label="breadcrumb">{render_breadcrumbs(page.breadcrumb)}</nav>
-    {render_hero(page, image_context_url) if include_hero else render_page_header(page)}
-    {render_content(page)}
-    {render_fixed_image_stack(page.title, image_context_url)}
-    <section class="content-grid">
-      {''.join(render_link_section(heading, links) for heading, links in page.sections if links)}
-    </section>
+    {body_html}
   </main>
   <footer class="site-footer">
     <p>{escape(SITE_NAME)}</p>
@@ -58,6 +61,14 @@ def render_page(page: Page, include_hero: bool = False, asset_url: str | None = 
 </html>
 """
     return add_missing_heading_ids(html)
+
+
+def render_detail_page_body(page: Page, image_context_url: str) -> str:
+    return (
+        f"{render_page_header(page)}"
+        f"{render_fixed_image_stack(page.title, image_context_url, count=3, class_name='detail-image-stack')}"
+        f"{render_content(page, page.sections)}"
+    )
 
 
 def render_breadcrumbs(items: list[dict[str, str]]) -> str:
@@ -97,10 +108,7 @@ def render_hero(page: Page, current_url: str) -> str:
 
 
 def render_page_header(page: Page) -> str:
-    return f"""<section class="page-visual">
-      <img src="{STUDYHUB_MAIN_HERO_IMAGE}" alt="{escape(page.title)} StudyHub 교육 정보 이미지" width="1536" height="1024" loading="eager" decoding="async">
-    </section>
-    <section class="page-heading">
+    return f"""<section class="page-heading">
       <p class="eyebrow">{escape(SITE_NAME)}</p>
       <h1>{escape(page.title)}</h1>
       <p>{escape(page_intro(page))}</p>
@@ -124,18 +132,20 @@ def render_fixed_image(title: str, current_url: str, index: int, class_name: str
     )
 
 
-def render_fixed_image_stack(title: str, current_url: str) -> str:
+def render_fixed_image_stack(title: str, current_url: str, count: int = 6, class_name: str = "fixed-image-stack") -> str:
     blocks = [render_fixed_image(title, current_url, 1, "representative-image")]
-    blocks.extend(render_fixed_image(title, current_url, index) for index in range(2, 7))
-    return '<div class="fixed-image-stack">\n' + "\n".join(blocks) + "\n</div>"
+    blocks.extend(render_fixed_image(title, current_url, index) for index in range(2, count + 1))
+    return f'<div class="{class_name}">\n' + "\n".join(blocks) + "\n</div>"
 
 
-def render_content(page: Page) -> str:
-    if not page.content and not page.faq:
+def render_content(page: Page, sections: list[tuple[str, list[dict[str, str]]]] | None = None) -> str:
+    sections = sections or []
+    if not page.content and not page.faq and not sections:
         return ""
     content = enhance_content_html(page.content or "")
     faq = enhance_content_html(page.faq or "")
-    return f'<section class="page-content">{cardize_content(content)}{render_faq_content(faq)}</section>'
+    body = interleave_content_and_links(content, sections)
+    return f'<section class="page-content">{body}{render_faq_content(faq)}</section>'
 
 
 def cardize_content(html: str) -> str:
@@ -145,6 +155,44 @@ def cardize_content(html: str) -> str:
     parts = re.split(r"(?=<(?:h2|h3)\b)", html, flags=re.IGNORECASE)
     cards = [part.strip() for part in parts if part.strip()]
     return "".join(f'<article class="info-card">{part}</article>' for part in cards)
+
+
+def split_content_cards(html: str) -> list[str]:
+    html = html.strip()
+    if not html:
+        return []
+    parts = re.split(r"(?=<(?:h2|h3)\b)", html, flags=re.IGNORECASE)
+    return [f'<article class="info-card">{part.strip()}</article>' for part in parts if part.strip()]
+
+
+def interleave_content_and_links(html: str, sections: list[tuple[str, list[dict[str, str]]]]) -> str:
+    cards = split_content_cards(html)
+    link_bands = [render_related_link_band(heading, links[:5]) for heading, links in sections if links]
+    if not cards:
+        return "".join(link_bands)
+
+    output: list[str] = []
+    for index, card in enumerate(cards):
+        output.append(card)
+        if index < len(link_bands):
+            output.append(link_bands[index])
+    if len(link_bands) > len(cards):
+        output.extend(link_bands[len(cards):])
+    return "".join(output)
+
+
+def render_related_link_band(title: str, links: list[dict[str, str]]) -> str:
+    if not links:
+        return ""
+    display_title = natural_section_title(title)
+    items = "".join(
+        f'<li><a class="related-card" href="{escape(link["url"])}">'
+        f'<strong>{escape(link["title"])}</strong>'
+        f'<span>{escape(link_description(link["title"]))}</span>'
+        "</a></li>"
+        for link in links
+    )
+    return f'<aside class="related-link-band"><h2 id="{heading_id(display_title)}">{escape(display_title)}</h2><ul>{items}</ul></aside>'
 
 
 def render_faq_content(html: str) -> str:
