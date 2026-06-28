@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 import re
 from urllib.parse import quote
 
-from config import SITE_NAME, SITE_URL
+from config import FIXED_IMAGES, SITE_NAME, SITE_URL
 from sitegen.pages import Page, RenderedFile
 from sitegen.seo import json_script, meta_tags, webpage_schema
 from sitegen.utils import escape
@@ -66,7 +66,7 @@ def render_page(page: Page, include_hero: bool = False, asset_url: str | None = 
 def render_detail_page_body(page: Page, image_context_url: str) -> str:
     return (
         f"{render_page_header(page)}"
-        f"{render_fixed_image_stack(page.title, image_context_url, count=3, class_name='detail-image-stack')}"
+        f"{render_fixed_image_stack(page.title, image_context_url, class_name='detail-image-stack')}"
         f"{render_content(page, page.sections)}"
     )
 
@@ -80,7 +80,7 @@ def render_link_section(title: str, links: list[dict[str, str]]) -> str:
     items = "".join(
         f'<li><a class="link-card" href="{escape(link["url"])}">'
         f'<span class="link-card-title">{escape(link["title"])}</span>'
-        f'<span class="link-card-meta">{escape(link_description(link["title"]))}</span>'
+        f'<span class="link-card-meta">{escape(link_description(link["title"], display_title))}</span>'
         f'<span class="link-card-arrow">→</span>'
         "</a></li>"
         for link in links
@@ -122,7 +122,7 @@ def render_studynote_hero_image(page: Page, current_url: str) -> str:
     )
 
 
-def render_fixed_image(title: str, current_url: str, index: int, class_name: str = "flow-image") -> str:
+def render_fixed_image_legacy(title: str, current_url: str, index: int, class_name: str = "flow-image") -> str:
     prefix = fixed_image_src_prefix(current_url)
     return (
         f'<figure class="{class_name}">'
@@ -132,9 +132,26 @@ def render_fixed_image(title: str, current_url: str, index: int, class_name: str
     )
 
 
-def render_fixed_image_stack(title: str, current_url: str, count: int = 6, class_name: str = "fixed-image-stack") -> str:
-    blocks = [render_fixed_image(title, current_url, 1, "representative-image")]
-    blocks.extend(render_fixed_image(title, current_url, index) for index in range(2, count + 1))
+def render_fixed_image_stack_legacy(title: str, current_url: str, count: int = 6, class_name: str = "fixed-image-stack") -> str:
+    blocks = [render_fixed_image_legacy(title, current_url, 1, "representative-image")]
+    blocks.extend(render_fixed_image_legacy(title, current_url, index) for index in range(2, count + 1))
+    return f'<div class="{class_name}">\n' + "\n".join(blocks) + "\n</div>"
+
+
+def render_fixed_image(title: str, src: str, index: int, class_name: str = "flow-image") -> str:
+    return (
+        f'<figure class="{class_name}">'
+        f'<img src="{escape(src)}" alt="{escape(title)} 맞춤 과외 안내 이미지 {index:03d}" '
+        f'width="1200" height="630" loading="lazy" decoding="async">'
+        "</figure>"
+    )
+
+
+def render_fixed_image_stack(title: str, current_url: str, class_name: str = "fixed-image-stack") -> str:
+    blocks = [
+        render_fixed_image(title, src, index, "representative-image" if index == 1 else "flow-image")
+        for index, src in enumerate(FIXED_IMAGES, start=1)
+    ]
     return f'<div class="{class_name}">\n' + "\n".join(blocks) + "\n</div>"
 
 
@@ -188,7 +205,7 @@ def render_related_link_band(title: str, links: list[dict[str, str]]) -> str:
     items = "".join(
         f'<li><a class="related-card" href="{escape(link["url"])}">'
         f'<strong>{escape(link["title"])}</strong>'
-        f'<span>{escape(link_description(link["title"]))}</span>'
+        f'<span>{escape(link_description(link["title"], display_title))}</span>'
         "</a></li>"
         for link in links
     )
@@ -315,6 +332,22 @@ def link_description(title: str) -> str:
     if title.endswith("과외"):
         return f"{title[:-2]} 지역 학습 정보"
     return "관련 학습 정보"
+
+
+def link_description(title: str, section_title: str = "") -> str:
+    if "형제" in section_title or "인근" in section_title:
+        return "인근 지역의 학습 정보도 함께 확인해 보세요."
+    if "상위" in section_title:
+        return "상위 지역의 학습 흐름을 함께 살펴보세요."
+    if "같은 지역" in section_title:
+        return "같은 지역의 다른 과외 정보도 함께 살펴보세요."
+    if "학년" in section_title:
+        return f"{title}에 맞는 학년별 학습 정보를 확인해 보세요."
+    if "지역" in section_title:
+        return f"{title} 지역의 학습 정보를 차분히 살펴보세요."
+    if any(grade in title for grade in ("초등", "중등", "고등")):
+        return f"{title} 학생을 위한 학습 정보를 확인해 보세요."
+    return "관련 학습 정보를 함께 확인해 보세요."
 
 
 def render_root_entry(root_page: Page) -> RenderedFile:

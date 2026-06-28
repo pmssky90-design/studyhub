@@ -56,6 +56,10 @@ HERO_IMAGE_HEIGHT = 630
 CONTENT_IMAGE = "/assets/images/studyhub-content.webp"
 CONTENT_IMAGE_WIDTH = 1200
 CONTENT_IMAGE_HEIGHT = 630
+FIXED_IMAGES = [
+    f"/assets/images/studynote-source/fixed/{index:03d}.png"
+    for index in range(1, 7)
+]
 LOGO_IMAGE = "/assets/images/studyhub-logo.png"
 LOGO_IMAGE_WIDTH = 512
 LOGO_IMAGE_HEIGHT = 512
