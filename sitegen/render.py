@@ -127,7 +127,7 @@ def render_fixed_image_legacy(title: str, current_url: str, index: int, class_na
     return (
         f'<figure class="{class_name}">'
         f'<img src="{prefix}{index:03d}.png" alt="{escape(title)} 맞춤 과외 안내 이미지 {index:03d}" '
-        f'width="1200" height="630" loading="lazy" decoding="async">'
+        f'width="1200" height="630" loading="eager" decoding="async">'
         "</figure>"
     )
 
@@ -142,7 +142,7 @@ def render_fixed_image(title: str, src: str, index: int, class_name: str = "flow
     return (
         f'<figure class="{class_name}">'
         f'<img src="{escape(src)}" alt="{escape(title)} 맞춤 과외 안내 이미지 {index:03d}" '
-        f'width="1200" height="630" loading="lazy" decoding="async">'
+        f'width="1200" height="630" loading="eager" decoding="async">'
         "</figure>"
     )
 
