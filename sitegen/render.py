@@ -1,4 +1,4 @@
-﻿from datetime import datetime, timezone
+from datetime import datetime, timezone
 import hashlib
 import re
 
@@ -7,8 +7,8 @@ from sitegen.pages import Page, RenderedFile
 from sitegen.seo import json_script, meta_tags, webpage_schema
 from sitegen.utils import escape
 
-STUDYNOTE_HERO_IMAGE = "ChatGPT Image 2026??6??26???ㅼ쟾 09_21_47.png"
-STUDYNOTE_OG_IMAGE = "ChatGPT Image 2026??6??5???ㅽ썑 07_49_40.png"
+STUDYNOTE_HERO_IMAGE = "ChatGPT Image 2026년 6월 26일 오전 09_21_47.png"
+STUDYNOTE_OG_IMAGE = "ChatGPT Image 2026년 6월 5일 오후 07_49_40.png"
 STUDYHUB_MAIN_HERO_IMAGE = "/assets/images/studyhub-main-hero.png"
 
 
@@ -16,8 +16,6 @@ def render_site(pages: list[Page]) -> list[RenderedFile]:
     files = [RenderedFile(page.url, render_page(page)) for page in pages]
     files.append(render_root_entry(pages[0]))
     files.append(render_sitemap(pages))
-    files.append(render_html_sitemap(pages))
-    files.append(render_404_page())
     return files
 
 
@@ -44,7 +42,7 @@ def render_page(page: Page, include_hero: bool = False, asset_url: str | None = 
   {json_script(schema)}
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
+  <a class="skip-link" href="#main">본문 바로가기</a>
   <header class="site-header">
     <a class="brand" href="/">{escape(SITE_NAME)}</a>
     <nav class="top-nav" aria-label="navigation">
@@ -83,7 +81,7 @@ def render_link_section(title: str, links: list[dict[str, str]]) -> str:
         f'<li><a class="link-card" href="{escape(link["url"])}">'
         f'<span class="link-card-title">{escape(link["title"])}</span>'
         f'<span class="link-card-meta">{escape(link_description(link["title"], display_title))}</span>'
-        f'<span class="link-card-arrow">??/span>'
+        f'<span class="link-card-arrow">→</span>'
         "</a></li>"
         for link in links
     )
@@ -119,7 +117,7 @@ def render_page_header(page: Page) -> str:
 
 def render_studynote_hero_image(page: Page, current_url: str) -> str:
     return (
-        f'<img class="hero-image" src="{STUDYHUB_MAIN_HERO_IMAGE}" alt="{escape(page.title)} StudyHub 援먯쑁 ?뺣낫 ?대?吏" '
+        f'<img class="hero-image" src="{STUDYHUB_MAIN_HERO_IMAGE}" alt="{escape(page.title)} StudyHub 교육 정보 이미지" '
         'width="1536" height="1024" loading="lazy" decoding="async">'
     )
 
@@ -128,7 +126,7 @@ def render_fixed_image_legacy(title: str, current_url: str, index: int, class_na
     prefix = fixed_image_src_prefix(current_url)
     return (
         f'<figure class="{class_name}">'
-        f'<img src="{prefix}{index:03d}.png" alt="{escape(title)} 留욎땄 怨쇱쇅 ?덈궡 ?대?吏 {index:03d}" '
+        f'<img src="{prefix}{index:03d}.png" alt="{escape(title)} 맞춤 과외 안내 이미지 {index:03d}" '
         f'width="1200" height="630" loading="eager" decoding="async">'
         "</figure>"
     )
@@ -143,7 +141,7 @@ def render_fixed_image_stack_legacy(title: str, current_url: str, count: int = 6
 def render_fixed_image(title: str, src: str, index: int, class_name: str = "flow-image") -> str:
     return (
         f'<figure class="{class_name}">'
-        f'<img src="{escape(src)}" alt="{escape(title)} 留욎땄 怨쇱쇅 ?덈궡 ?대?吏 {index:03d}" '
+        f'<img src="{escape(src)}" alt="{escape(title)} 맞춤 과외 안내 이미지 {index:03d}" '
         f'width="1200" height="630" loading="eager" decoding="async">'
         "</figure>"
     )
@@ -159,10 +157,15 @@ def render_fixed_image_stack(title: str, current_url: str, class_name: str = "fi
 
 def render_content(page: Page, sections: list[tuple[str, list[dict[str, str]]]] | None = None) -> str:
     sections = sections or []
-    if not page.content and not page.faq and not sections:
+    content_source = page.content or ""
+    faq_source = page.faq or ""
+    if not content_source and sections:
+        content_source = fallback_content(page)
+        faq_source = fallback_faq(page)
+    if not content_source and not faq_source and not sections:
         return ""
-    content = enhance_content_html(page.content or "")
-    faq = enhance_content_html(page.faq or "")
+    content = enhance_content_html(content_source)
+    faq = enhance_content_html(faq_source)
     body = interleave_content_and_links(content, sections)
     return f'<section class="page-content">{body}{render_faq_content(faq)}</section>'
 
@@ -222,22 +225,8 @@ def render_faq_content(html: str) -> str:
 
 
 def enhance_content_html(html: str) -> str:
-    html = repair_malformed_closing_tags(html)
-    html = demote_content_h1(html)
     html = add_heading_ids(html)
     return add_image_attributes(html)
-
-
-def repair_malformed_closing_tags(html: str) -> str:
-    for tag in ("h1", "h2", "h3", "p", "strong", "a", "li", "ul", "ol"):
-        html = re.sub(rf"(</{tag}>)(?:/{tag}>)+", rf"</{tag}>", html, flags=re.IGNORECASE)
-        html = re.sub(rf"(?<!<)/{tag}>", "", html, flags=re.IGNORECASE)
-    return html
-
-
-def demote_content_h1(html: str) -> str:
-    html = re.sub(r"<h1(\b[^>]*)>", r"<h2\1>", html, flags=re.IGNORECASE)
-    return re.sub(r"</h1>", "</h2>", html, flags=re.IGNORECASE)
 
 
 def add_heading_ids(html: str) -> str:
@@ -294,12 +283,8 @@ def strip_tags(value: str) -> str:
 
 
 def heading_id(value: str) -> str:
-    text = strip_tags(value).strip().lower()
-    slug = re.sub(r"[^0-9a-z]+", "-", text).strip("-")
-    if slug:
-        return slug
-    digest = hashlib.sha1(text.encode("utf-8", errors="ignore")).hexdigest()[:8]
-    return f"section-{digest}"
+    slug = re.sub(r"[^0-9A-Za-z가-힣]+", "-", value.strip().lower()).strip("-")
+    return slug or "section"
 
 
 def unique_heading_id(value: str, used: set[str]) -> str:
@@ -337,86 +322,125 @@ def absolute_image_url(path: str) -> str:
 
 def page_intro(page: Page) -> str:
     if page.category:
-        return f"{page.display_name} 湲곗??쇰줈 吏?? 怨쇰ぉ, ?숇뀈 ?뺣낫瑜?李⑤텇?섍쾶 ?댄렣蹂????덈뒗 StudyHub ?덈궡 ?섏씠吏?낅땲??"
+        return f"{page.display_name} 기준으로 지역, 과목, 학년 정보를 차분하게 살펴볼 수 있는 StudyHub 안내 페이지입니다."
     return page.meta_description
 
 
+def fallback_content(page: Page) -> str:
+    title = page.title
+    region = page.display_name or title.replace(page.category or "", "")
+    category = page.category or "과외"
+    focus_sets = [
+        ("개념 이해", "오답 기록", "학교 진도"),
+        ("시간 배분", "문제 독해", "복습 루틴"),
+        ("서술형 대비", "학습 태도", "시험 일정"),
+    ]
+    seed = sum(ord(char) for char in page.id)
+    first, second, third = focus_sets[seed % len(focus_sets)]
+    return "\n".join(
+        [
+            f"<h2>{title} 학습 방향 점검</h2>",
+            f"<p>{title} 정보를 살펴볼 때는 {region}의 생활 동선과 학교 일정, 학생의 현재 이해도를 함께 확인하는 것이 좋습니다. {category} 학습은 단순히 많은 문제를 푸는 방식보다 어느 지점에서 막히는지 차분히 찾는 과정이 중요합니다.</p>",
+            f"<p>특히 {first}, {second}, {third}는 학습 계획을 세울 때 함께 보아야 할 기준입니다. 각각을 따로 판단하기보다 학생의 하루 흐름 안에서 자연스럽게 이어지는지 확인하면 학습 부담을 줄일 수 있습니다.</p>",
+            f"<h3>{region} 학생에게 필요한 기준</h3>",
+            "<p>학생마다 집중이 잘 되는 시간과 어려움을 느끼는 단원이 다릅니다. 따라서 현재 수준을 먼저 점검하고, 복습과 예습의 비중을 조정하며, 시험 전에는 자주 틀리는 유형을 다시 확인하는 순서가 필요합니다.</p>",
+            "<p>가정에서는 결과만 보기보다 문제를 읽는 방식, 풀이를 설명하는 습관, 오답을 다시 보는 태도를 함께 살펴보면 좋습니다. 이런 기록은 다음 학습 방향을 정할 때 실제적인 근거가 됩니다.</p>",
+            f"<h2>{category} 학습 루틴 구성</h2>",
+            f"<p>{category} 학습 루틴은 짧아도 반복 가능해야 합니다. 하루에 한 번은 배운 개념을 말로 설명하고, 틀린 문제의 원인을 한 문장으로 남기며, 다음 학습에서 다시 확인할 항목을 정리하는 방식이 안정적입니다.</p>",
+            "<p>처음부터 많은 양을 정하기보다 학생이 지킬 수 있는 범위를 잡는 것이 중요합니다. 작은 성공이 쌓이면 학습에 대한 부담이 줄고, 스스로 확인하는 힘도 조금씩 커집니다.</p>",
+            "<h3>본문에서 확인할 핵심 질문</h3>",
+            "<p>오늘 배운 내용을 스스로 설명할 수 있는지, 같은 실수가 반복되는지, 학교 진도와 복습이 연결되는지, 시험 전까지 점검할 자료가 정리되어 있는지를 기준으로 살펴보면 좋습니다.</p>",
+            f"<h2>{title} 정보 활용 방법</h2>",
+            f"<p>{title} 페이지의 주변 지역, 과목, 학년 정보를 함께 보면 {region} 안에서 어떤 학습 조건을 고려해야 하는지 더 분명해집니다. 한 페이지에서 끝내지 말고 관련 정보를 비교하며 학생에게 맞는 기준을 정리해 보세요.</p>",
+            "<p>학습 정보는 광고 문구보다 실제 공부 장면에 도움이 되는 질문으로 이어져야 합니다. 학생이 어디에서 어려움을 느끼는지, 어떤 순서로 확인하면 좋은지, 지속 가능한 루틴이 무엇인지 차분히 살펴보는 것이 핵심입니다.</p>",
+        ]
+    )
+
+
+def fallback_faq(page: Page) -> str:
+    title = page.title
+    region = page.display_name or title.replace(page.category or "", "")
+    return "\n".join(
+        [
+            "<h2>FAQ</h2>",
+            f"<p>Q. {title} 정보를 볼 때 가장 먼저 확인할 점은 무엇인가요?</p>",
+            "<p>A. 학생의 현재 이해도, 학교 진도, 가정에서 확보할 수 있는 학습 시간을 함께 확인하는 것이 좋습니다.</p>",
+            f"<p>Q. {region} 지역 정보는 어떻게 활용하면 좋나요?</p>",
+            "<p>A. 주변 지역과 학년별 정보를 비교해 학생에게 맞는 학습 조건을 정리하는 데 활용할 수 있습니다.</p>",
+            "<p>Q. 과외 학습에서 가장 중요한 습관은 무엇인가요?</p>",
+            "<p>A. 배운 내용을 짧게 복습하고, 틀린 이유를 기록하며, 다음 학습에 다시 반영하는 습관입니다.</p>",
+            "<p>Q. 본문 중간의 관련 링크는 어떻게 보면 좋나요?</p>",
+            "<p>A. 현재 페이지와 연결된 상위 지역, 주변 지역, 같은 지역의 다른 과목 정보를 비교하는 용도로 보면 좋습니다.</p>",
+            "<p>Q. 학습 계획은 얼마나 자주 점검해야 하나요?</p>",
+            "<p>A. 최소한 주 1회는 진도, 오답, 복습 시간을 함께 확인해 다음 주 계획에 반영하는 것이 좋습니다.</p>",
+        ]
+    )
 
 
 def natural_section_title(title: str) -> str:
     replacements = {
-        "\uc0c1\uc704 \uad6c\uc870": "\ud568\uaed8 \uc0b4\ud3b4\ubcf4\ub294 \uc0c1\uc704 \uc9c0\uc5ed",
-        "\uc0c1\uc704 \uc9c0\uc5ed": "\ud568\uaed8 \uc0b4\ud3b4\ubcf4\ub294 \uc0c1\uc704 \uc9c0\uc5ed",
-        "\ud558\uc704 \uc9c0\uc5ed": "\uc778\uadfc \uc9c0\uc5ed",
-        "\uc2dc\ub3c4": "\uc9c0\uc5ed\ubcc4\ub85c \ucc3e\uae30",
-        "\ud615\uc81c \uc9c0\uc5ed": "\uc8fc\ubcc0 \uc9c0\uc5ed",
-        "\uac19\uc740 \uc9c0\uc5ed \uacfc\uc678": "\ud568\uaed8 \ubcf4\uba74 \uc88b\uc740 \uc9c0\uc5ed \uc815\ubcf4",
-        "\uc9c0\uc5ed \uba54\uc778": "\uad00\ub828 \uc9c0\uc5ed \uc815\ubcf4",
-        "\uacfc\uc678 \uc720\ud615": "\uacfc\uc678 \uc720\ud615\ubcc4 \uc815\ubcf4",
-        "\uc218\ud559\uacfc\uc678 \ud559\ub144\ubcc4 \uc815\ubcf4": "\uc218\ud559\uacfc\uc678 \ud559\ub144\ubcc4 \uc548\ub0b4",
-        "\uc601\uc5b4\uacfc\uc678 \ud559\ub144\ubcc4 \uc815\ubcf4": "\uc601\uc5b4\uacfc\uc678 \ud559\ub144\ubcc4 \uc548\ub0b4",
+        "상위 구조": "함께 살펴보는 상위 지역",
+        "상위 지역": "함께 살펴보는 상위 지역",
+        "하위 지역": "인근 지역",
+        "시도": "지역별로 찾기",
+        "형제 지역": "주변 지역",
+        "같은 지역 과외": "함께 보면 좋은 지역 정보",
+        "지역 메인": "관련 지역 정보",
+        "과외 유형": "과외 유형별 정보",
+        "수학과외 허브": "지역별 수학과외",
+        "영어과외 허브": "지역별 영어과외",
+        "초등과외 허브": "지역별 초등과외",
+        "중등과외 허브": "지역별 중등과외",
+        "고등과외 허브": "지역별 고등과외",
+        "수학과외 세부 구조": "수학과외 학년별 안내",
+        "영어과외 세부 구조": "영어과외 학년별 안내",
     }
-    return replacements.get(title.replace("\ud5c8\ube0c", "\uc815\ubcf4"), title.replace("\ud5c8\ube0c", "\uc815\ubcf4"))
+    return replacements.get(title, title.replace("허브", "정보"))
 
 
-def link_description(title: str, section_title: str = "") -> str:
-    variants = [
-        f"{title}\uc758 \ud559\uc2b5 \ud658\uacbd\uacfc \uad50\uc721 \uc815\ubcf4\ub97c \ud568\uaed8 \ud655\uc778\ud574 \ubcf4\uc138\uc694.",
-        f"{title} \ud559\uc0dd\ub4e4\uc774 \uc790\uc8fc \uc0b4\ud3b4\ubcf4\ub294 \ud559\uc2b5 \uc815\ubcf4\ub97c \uc815\ub9ac\ud588\uc2b5\ub2c8\ub2e4.",
-        f"{title}\uc640 \uc5f0\uacb0\ub41c \uc9c0\uc5ed, \uacfc\ubaa9, \ud559\ub144 \uc815\ubcf4\ub97c \ube44\uad50\ud574 \ubcf4\uc138\uc694.",
-        "\uc778\uadfc \uc9c0\uc5ed\uc758 \ud559\uc2b5 \uc815\ubcf4\ub3c4 \ud568\uaed8 \ube44\uad50\ud574 \ubcf4\uc138\uc694.",
-        "\uac19\uc740 \uacfc\ubaa9\uc758 \ub2e4\ub978 \uc9c0\uc5ed \uc815\ubcf4\ub3c4 \uc790\uc5f0\uc2a4\ub7fd\uac8c \uc774\uc5b4\uc11c \ubcfc \uc218 \uc788\uc2b5\ub2c8\ub2e4.",
-    ]
-    if "\uc8fc\ubcc0" in section_title or "\uc778\uadfc" in section_title:
-        return variants[3]
-    if "\uc0c1\uc704" in section_title:
-        return f"{title} \uc548\uc5d0\uc11c \uc774\uc5b4\uc9c0\ub294 \ud559\uc2b5 \ud750\ub984\uc744 \ud568\uaed8 \uc0b4\ud3b4\ubcf4\uc138\uc694."
-    if "\uac19\uc740 \uc9c0\uc5ed" in section_title or "\ud568\uaed8 \ubcf4\uba74" in section_title:
-        return "\uac19\uc740 \uc9c0\uc5ed\uc758 \ub2e4\ub978 \uacfc\uc678 \uc815\ubcf4\ub3c4 \ud568\uaed8 \uc0b4\ud3b4\ubcf4\uc138\uc694."
-    if "\ud559\ub144" in section_title:
-        return f"{title}\uc5d0 \ub9de\ub294 \ud559\ub144\ubcc4 \ud559\uc2b5 \ubc29\ud5a5\uc744 \ud655\uc778\ud574 \ubcf4\uc138\uc694."
-    if "\uc9c0\uc5ed" in section_title:
-        return variants[sum(ord(char) for char in title) % 3]
-    return variants[sum(ord(char) for char in title) % len(variants)]
+def link_description(title: str) -> str:
+    if title.endswith("과외"):
+        return f"{title[:-2]} 지역 학습 정보"
+    return "관련 학습 정보"
 
 
 def link_description(title: str, section_title: str = "") -> str:
     seed = sum(ord(char) for char in f"{section_title}:{title}")
     nearby = [
-        f"{title}\uc758 \ud559\uc2b5 \ubd84\uc704\uae30\ub97c \ud568\uaed8 \ube44\uad50\ud574 \ubcf4\uc138\uc694.",
-        f"{title}\uc5d0\uc11c \uc774\uc5b4\uc9c0\ub294 \ud559\uc2b5 \ud750\ub984\ub3c4 \ucc28\ubd84\ud788 \uc0b4\ud3b4\ubcf4\uc138\uc694.",
-        f"{title} \uc8fc\ubcc0\uc758 \uad50\uc721 \uc815\ubcf4\ub97c \ud568\uaed8 \uc815\ub9ac\ud574 \ubcfc \uc218 \uc788\uc2b5\ub2c8\ub2e4.",
-        f"\uc778\uc811\ud55c {title} \uc815\ubcf4\ub97c \ube44\uad50\ud558\uba70 \ud559\uc2b5 \ubc29\ud5a5\uc744 \uc815\ub9ac\ud574 \ubcf4\uc138\uc694.",
-        f"{title} \ud559\uc0dd\ub4e4\uc774 \uc0b4\ud3b4\ubcfc \ub9cc\ud55c \uad50\uc721 \uc815\ubcf4\ub97c \ud568\uaed8 \ud655\uc778\ud574 \ubcf4\uc138\uc694.",
+        f"{title}의 학습 분위기를 함께 비교해 보세요.",
+        f"{title}에서 이어지는 학습 흐름도 차분히 살펴보세요.",
+        f"{title} 주변의 교육 정보를 함께 정리해 볼 수 있습니다.",
+        f"인접한 {title} 정보를 비교하며 학습 방향을 정리해 보세요.",
+        f"{title} 학생들이 살펴볼 만한 교육 정보를 함께 확인해 보세요.",
     ]
     parent = [
-        f"{title} \ubc94\uc704\uc5d0\uc11c \uc5f0\uacb0\ub418\ub294 \uc9c0\uc5ed \uc815\ubcf4\ub97c \uba3c\uc800 \uc0b4\ud3b4\ubcf4\uc138\uc694.",
-        f"{title}\uc758 \ud559\uc2b5 \ud658\uacbd\uc744 \ubcf4\uba74 \ud604\uc7ac \uc9c0\uc5ed \uc815\ubcf4\ub97c \ub354 \ub113\uac8c \uc774\ud574\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4.",
-        f"{title}\uc640 \ud568\uaed8 \ubcf4\uba74 \uc9c0\uc5ed \uacc4\uce35\uc744 \uc27d\uac8c \ud30c\uc545\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4.",
+        f"{title} 범위에서 연결되는 지역 정보를 먼저 살펴보세요.",
+        f"{title}의 학습 환경을 보면 현재 지역 정보를 더 넓게 이해할 수 있습니다.",
+        f"{title}와 함께 보면 지역 계층을 쉽게 파악할 수 있습니다.",
     ]
     same_region = [
-        f"{title}\uc758 \ub2e4\ub978 \uacfc\uc678 \uc815\ubcf4\ub97c \ud568\uaed8 \uc0b4\ud3b4\ubcf4\uc138\uc694.",
-        f"\uac19\uc740 \uc9c0\uc5ed\uc5d0\uc11c \uc5f0\uacb0\ub418\ub294 {title} \uc815\ubcf4\ub3c4 \ud655\uc778\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4.",
-        f"{title}\ub97c \ud1b5\ud574 \uacfc\ubaa9\uacfc \ud559\ub144 \ud750\ub984\uc744 \ud568\uaed8 \ube44\uad50\ud574 \ubcf4\uc138\uc694.",
+        f"{title}의 다른 과외 정보를 함께 살펴보세요.",
+        f"같은 지역에서 연결되는 {title} 정보도 확인할 수 있습니다.",
+        f"{title}를 통해 과목과 학년 흐름을 함께 비교해 보세요.",
     ]
     grade = [
-        f"{title}\uc5d0 \ub9de\ub294 \ud559\ub144\ubcc4 \ud559\uc2b5 \ud750\ub984\uc744 \ud655\uc778\ud574 \ubcf4\uc138\uc694.",
-        f"{title}\uc758 \uc900\ube44 \ud3ec\uc778\ud2b8\ub97c \ud559\ub144 \ub2e8\uacc4\uc640 \ud568\uaed8 \uc815\ub9ac\ud574 \ubcf4\uc138\uc694.",
-        f"{title} \uc815\ubcf4\ub97c \ubcf4\uba74 \ud559\ub144\uc5d0 \ub530\ub978 \ud559\uc2b5 \ubc29\ud5a5\uc744 \uc138\uc6b0\uae30 \uc88b\uc2b5\ub2c8\ub2e4.",
+        f"{title}에 맞는 학년별 학습 흐름을 확인해 보세요.",
+        f"{title}의 준비 포인트를 학년 단계와 함께 정리해 보세요.",
+        f"{title} 정보를 보면 학년에 따른 학습 방향을 세우기 좋습니다.",
     ]
     general = [
-        f"{title}\uc758 \ud559\uc2b5 \ud658\uacbd\uacfc \uad50\uc721 \uc815\ubcf4\ub97c \ud568\uaed8 \ud655\uc778\ud574 \ubcf4\uc138\uc694.",
-        f"{title}\uc640 \uc5f0\uacb0\ub41c \uc9c0\uc5ed, \uacfc\ubaa9, \ud559\ub144 \uc815\ubcf4\ub97c \ucc28\ubd84\ud788 \ube44\uad50\ud574 \ubcf4\uc138\uc694.",
-        f"{title} \uc815\ubcf4\ub97c \ubc14\ud0d5\uc73c\ub85c \ud559\uc2b5 \uc120\ud0dd\uc9c0\ub97c \ub354 \ub113\uac8c \uc0b4\ud3b4\ubcf4\uc138\uc694.",
-        f"{title} \ud559\uc0dd\ub4e4\uc774 \ucc38\uace0\ud560 \ub9cc\ud55c \ud559\uc2b5 \uc815\ubcf4\ub97c \ud568\uaed8 \uc815\ub9ac\ud588\uc2b5\ub2c8\ub2e4.",
+        f"{title}의 학습 환경과 교육 정보를 함께 확인해 보세요.",
+        f"{title}와 연결된 지역, 과목, 학년 정보를 차분히 비교해 보세요.",
+        f"{title} 정보를 바탕으로 학습 선택지를 더 넓게 살펴보세요.",
+        f"{title} 학생들이 참고할 만한 학습 정보를 함께 정리했습니다.",
     ]
-    if "\uc8fc\ubcc0" in section_title or "\uc778\uadfc" in section_title:
+    if "주변" in section_title or "인근" in section_title:
         choices = nearby
-    elif "\uc0c1\uc704" in section_title:
+    elif "상위" in section_title:
         choices = parent
-    elif "\uac19\uc740 \uc9c0\uc5ed" in section_title or "\ud568\uaed8 \ubcf4\uba74" in section_title or "\uad00\ub828 \uc9c0\uc5ed" in section_title:
+    elif "같은 지역" in section_title or "함께 보면" in section_title or "관련 지역" in section_title:
         choices = same_region
-    elif "\ud559\ub144" in section_title or any(word in title for word in ("\ucd08\ub4f1", "\uc911\ub4f1", "\uace0\ub4f1")):
+    elif "학년" in section_title or any(word in title for word in ("초등", "중등", "고등")):
         choices = grade
     else:
         choices = general
@@ -445,87 +469,3 @@ def render_sitemap(pages: list[Page]) -> RenderedFile:
         )
     lines.append("</urlset>")
     return RenderedFile("/sitemap.xml", "\n".join(lines))
-
-
-def render_html_sitemap(pages: list[Page]) -> RenderedFile:
-    links = "\n".join(
-        f'<li><a href="{escape(page.url)}">{escape(page.title)}</a></li>'
-        for page in pages
-    )
-    html = f"""<!doctype html>
-<html lang="ko">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>StudyHub 사이트맵</title>
-  <meta name="robots" content="noindex,follow">
-  <link rel="stylesheet" href="/assets/css/style.css">
-</head>
-<body>
-  <a class="skip-link" href="#main">Skip to content</a>
-  <header class="site-header">
-    <a class="brand" href="/">StudyHub</a>
-  </header>
-  <main id="main">
-    <section class="page-heading">
-      <p class="eyebrow">StudyHub</p>
-      <h1>사이트맵</h1>
-      <p>StudyHub에서 생성된 페이지를 한곳에서 확인할 수 있습니다.</p>
-    </section>
-    <section class="page-content">
-      <article class="info-card">
-        <h2 id="sitemap-pages">전체 페이지</h2>
-        <ul class="sitemap-list">
-          {links}
-        </ul>
-      </article>
-    </section>
-  </main>
-  <footer class="site-footer">
-    <p>StudyHub</p>
-  </footer>
-</body>
-</html>
-"""
-    return RenderedFile("/sitemap.html", html)
-
-
-def render_404_page() -> RenderedFile:
-    html = """<!doctype html>
-<html lang="ko">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>페이지를 찾을 수 없습니다 | StudyHub</title>
-  <meta name="robots" content="noindex,follow">
-  <link rel="stylesheet" href="/assets/css/style.css">
-</head>
-<body>
-  <a class="skip-link" href="#main">Skip to content</a>
-  <header class="site-header">
-    <a class="brand" href="/">StudyHub</a>
-  </header>
-  <main id="main">
-    <section class="page-heading">
-      <p class="eyebrow">StudyHub</p>
-      <h1>페이지를 찾을 수 없습니다</h1>
-      <p>주소가 변경되었거나 아직 생성되지 않은 페이지입니다.</p>
-    </section>
-    <section class="page-content">
-      <article class="info-card">
-        <h2 id="return-home">다시 찾기</h2>
-        <p>StudyHub 메인과 사이트맵에서 원하는 지역과 과목 정보를 다시 확인해 보세요.</p>
-        <ul>
-          <li><a href="/">StudyHub 메인</a></li>
-          <li><a href="/sitemap.html">사이트맵</a></li>
-        </ul>
-      </article>
-    </section>
-  </main>
-  <footer class="site-footer">
-    <p>StudyHub</p>
-  </footer>
-</body>
-</html>
-"""
-    return RenderedFile("/404.html", html)
