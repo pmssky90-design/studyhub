@@ -1,6 +1,22 @@
 import json
 
-from config import CATEGORIES, DEFAULT_IMAGE, LOGO_IMAGE, LOGO_IMAGE_HEIGHT, LOGO_IMAGE_WIDTH, SITE_NAME, SITE_URL
+from config import (
+    APPLE_TOUCH_ICON,
+    CATEGORIES,
+    DEFAULT_IMAGE,
+    FAVICON_16,
+    FAVICON_32,
+    FAVICON_ICO,
+    LOGO_IMAGE,
+    LOGO_IMAGE_HEIGHT,
+    LOGO_IMAGE_WIDTH,
+    OG_IMAGE_HEIGHT,
+    OG_IMAGE_TYPE,
+    OG_IMAGE_WIDTH,
+    SITE_NAME,
+    SITE_URL,
+    THEME_COLOR,
+)
 from sitegen.utils import escape
 
 
@@ -121,15 +137,28 @@ def service_type_from_title(title: str) -> str | None:
 
 
 def meta_tags(title: str, description: str, canonical: str) -> str:
+    image_url = f"{SITE_URL.rstrip('/')}{DEFAULT_IMAGE}"
     return "\n".join(
         [
             f"<title>{escape(title)}</title>",
             f'<meta name="description" content="{escape(description)}">',
             f'<link rel="canonical" href="{escape(canonical)}">',
+            f'<link rel="icon" href="{FAVICON_ICO}" sizes="any">',
+            f'<link rel="icon" type="image/png" sizes="16x16" href="{FAVICON_16}">',
+            f'<link rel="icon" type="image/png" sizes="32x32" href="{FAVICON_32}">',
+            f'<link rel="apple-touch-icon" href="{APPLE_TOUCH_ICON}">',
+            f'<meta name="theme-color" content="{THEME_COLOR}">',
             f'<meta property="og:title" content="{escape(title)}">',
             f'<meta property="og:description" content="{escape(description)}">',
             f'<meta property="og:url" content="{escape(canonical)}">',
             '<meta property="og:type" content="website">',
-            f'<meta property="og:image" content="{SITE_URL.rstrip("/")}{DEFAULT_IMAGE}">',
+            f'<meta property="og:image" content="{image_url}">',
+            f'<meta property="og:image:width" content="{OG_IMAGE_WIDTH}">',
+            f'<meta property="og:image:height" content="{OG_IMAGE_HEIGHT}">',
+            f'<meta property="og:image:type" content="{OG_IMAGE_TYPE}">',
+            '<meta name="twitter:card" content="summary_large_image">',
+            f'<meta name="twitter:title" content="{escape(title)}">',
+            f'<meta name="twitter:description" content="{escape(description)}">',
+            f'<meta name="twitter:image" content="{image_url}">',
         ]
     )

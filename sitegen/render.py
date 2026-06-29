@@ -1,14 +1,14 @@
-from datetime import datetime, timezone
+﻿from datetime import datetime, timezone
+import hashlib
 import re
-from urllib.parse import quote
 
-from config import FIXED_IMAGES, SITE_NAME, SITE_URL
+from config import FIXED_IMAGES, OG_IMAGES, SITE_NAME, SITE_URL
 from sitegen.pages import Page, RenderedFile
 from sitegen.seo import json_script, meta_tags, webpage_schema
 from sitegen.utils import escape
 
-STUDYNOTE_HERO_IMAGE = "ChatGPT Image 2026년 6월 26일 오전 09_21_47.png"
-STUDYNOTE_OG_IMAGE = "ChatGPT Image 2026년 6월 5일 오후 07_49_40.png"
+STUDYNOTE_HERO_IMAGE = "ChatGPT Image 2026??6??26???ㅼ쟾 09_21_47.png"
+STUDYNOTE_OG_IMAGE = "ChatGPT Image 2026??6??5???ㅽ썑 07_49_40.png"
 STUDYHUB_MAIN_HERO_IMAGE = "/assets/images/studyhub-main-hero.png"
 
 
@@ -20,7 +20,7 @@ def render_site(pages: list[Page]) -> list[RenderedFile]:
 
 
 def render_page(page: Page, include_hero: bool = False, asset_url: str | None = None) -> str:
-    representative_image = studynote_og_image()
+    representative_image = representative_image_for_page(page)
     schema = webpage_schema(page.title, page.meta_description, page.canonical, page.breadcrumb)
     schema[0]["primaryImageOfPage"]["url"] = absolute_image_url(representative_image)
     image_context_url = asset_url or page.url
@@ -42,7 +42,7 @@ def render_page(page: Page, include_hero: bool = False, asset_url: str | None = 
   {json_script(schema)}
 </head>
 <body>
-  <a class="skip-link" href="#main">본문 바로가기</a>
+  <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <a class="brand" href="/">{escape(SITE_NAME)}</a>
     <nav class="top-nav" aria-label="navigation">
@@ -81,7 +81,7 @@ def render_link_section(title: str, links: list[dict[str, str]]) -> str:
         f'<li><a class="link-card" href="{escape(link["url"])}">'
         f'<span class="link-card-title">{escape(link["title"])}</span>'
         f'<span class="link-card-meta">{escape(link_description(link["title"], display_title))}</span>'
-        f'<span class="link-card-arrow">→</span>'
+        f'<span class="link-card-arrow">??/span>'
         "</a></li>"
         for link in links
     )
@@ -117,7 +117,7 @@ def render_page_header(page: Page) -> str:
 
 def render_studynote_hero_image(page: Page, current_url: str) -> str:
     return (
-        f'<img class="hero-image" src="{STUDYHUB_MAIN_HERO_IMAGE}" alt="{escape(page.title)} StudyHub 교육 정보 이미지" '
+        f'<img class="hero-image" src="{STUDYHUB_MAIN_HERO_IMAGE}" alt="{escape(page.title)} StudyHub 援먯쑁 ?뺣낫 ?대?吏" '
         'width="1536" height="1024" loading="lazy" decoding="async">'
     )
 
@@ -126,7 +126,7 @@ def render_fixed_image_legacy(title: str, current_url: str, index: int, class_na
     prefix = fixed_image_src_prefix(current_url)
     return (
         f'<figure class="{class_name}">'
-        f'<img src="{prefix}{index:03d}.png" alt="{escape(title)} 맞춤 과외 안내 이미지 {index:03d}" '
+        f'<img src="{prefix}{index:03d}.png" alt="{escape(title)} 留욎땄 怨쇱쇅 ?덈궡 ?대?吏 {index:03d}" '
         f'width="1200" height="630" loading="eager" decoding="async">'
         "</figure>"
     )
@@ -141,7 +141,7 @@ def render_fixed_image_stack_legacy(title: str, current_url: str, count: int = 6
 def render_fixed_image(title: str, src: str, index: int, class_name: str = "flow-image") -> str:
     return (
         f'<figure class="{class_name}">'
-        f'<img src="{escape(src)}" alt="{escape(title)} 맞춤 과외 안내 이미지 {index:03d}" '
+        f'<img src="{escape(src)}" alt="{escape(title)} 留욎땄 怨쇱쇅 ?덈궡 ?대?吏 {index:03d}" '
         f'width="1200" height="630" loading="eager" decoding="async">'
         "</figure>"
     )
@@ -220,8 +220,22 @@ def render_faq_content(html: str) -> str:
 
 
 def enhance_content_html(html: str) -> str:
+    html = repair_malformed_closing_tags(html)
+    html = demote_content_h1(html)
     html = add_heading_ids(html)
     return add_image_attributes(html)
+
+
+def repair_malformed_closing_tags(html: str) -> str:
+    for tag in ("h1", "h2", "h3", "p", "strong", "a", "li", "ul", "ol"):
+        html = re.sub(rf"(</{tag}>)(?:/{tag}>)+", rf"</{tag}>", html, flags=re.IGNORECASE)
+        html = re.sub(rf"(?<!<)/{tag}>", "", html, flags=re.IGNORECASE)
+    return html
+
+
+def demote_content_h1(html: str) -> str:
+    html = re.sub(r"<h1(\b[^>]*)>", r"<h2\1>", html, flags=re.IGNORECASE)
+    return re.sub(r"</h1>", "</h2>", html, flags=re.IGNORECASE)
 
 
 def add_heading_ids(html: str) -> str:
@@ -278,8 +292,12 @@ def strip_tags(value: str) -> str:
 
 
 def heading_id(value: str) -> str:
-    slug = re.sub(r"[^0-9A-Za-z가-힣]+", "-", value.strip().lower()).strip("-")
-    return slug or "section"
+    text = strip_tags(value).strip().lower()
+    slug = re.sub(r"[^0-9a-z]+", "-", text).strip("-")
+    if slug:
+        return slug
+    digest = hashlib.sha1(text.encode("utf-8", errors="ignore")).hexdigest()[:8]
+    return f"section-{digest}"
 
 
 def unique_heading_id(value: str, used: set[str]) -> str:
@@ -293,15 +311,22 @@ def unique_heading_id(value: str, used: set[str]) -> str:
 
 
 def render_meta_tags(page: Page, representative_image: str) -> str:
-    return re.sub(
+    html = re.sub(
         r'(<meta property="og:image" content=")[^"]+(">)',
         rf'\1{absolute_image_url(representative_image)}\2',
         meta_tags(page.title, page.meta_description, page.canonical),
     )
+    return re.sub(
+        r'(<meta name="twitter:image" content=")[^"]+(">)',
+        rf'\1{absolute_image_url(representative_image)}\2',
+        html,
+    )
 
 
-def studynote_og_image() -> str:
-    return "/images/thumbs/" + quote(STUDYNOTE_OG_IMAGE)
+def representative_image_for_page(page: Page) -> str:
+    seed = page.slug or page.title
+    digest = hashlib.sha256(seed.encode("utf-8")).hexdigest()
+    return OG_IMAGES[int(digest, 16) % len(OG_IMAGES)]
 
 
 def absolute_image_url(path: str) -> str:
@@ -310,44 +335,90 @@ def absolute_image_url(path: str) -> str:
 
 def page_intro(page: Page) -> str:
     if page.category:
-        return f"{page.display_name} 기준으로 지역, 과목, 학년 정보를 차분하게 살펴볼 수 있는 StudyHub 안내 페이지입니다."
+        return f"{page.display_name} 湲곗??쇰줈 吏?? 怨쇰ぉ, ?숇뀈 ?뺣낫瑜?李⑤텇?섍쾶 ?댄렣蹂????덈뒗 StudyHub ?덈궡 ?섏씠吏?낅땲??"
     return page.meta_description
+
+
 
 
 def natural_section_title(title: str) -> str:
     replacements = {
-        "수학과외 허브": "지역별 수학과외",
-        "영어과외 허브": "지역별 영어과외",
-        "초등과외 허브": "지역별 초등과외",
-        "중등과외 허브": "지역별 중등과외",
-        "고등과외 허브": "지역별 고등과외",
-        "수학과외 세부 구조": "수학과외 학년별 정보",
-        "영어과외 세부 구조": "영어과외 학년별 정보",
-        "상위 구조": "상위 정보",
+        "\uc0c1\uc704 \uad6c\uc870": "\ud568\uaed8 \uc0b4\ud3b4\ubcf4\ub294 \uc0c1\uc704 \uc9c0\uc5ed",
+        "\uc0c1\uc704 \uc9c0\uc5ed": "\ud568\uaed8 \uc0b4\ud3b4\ubcf4\ub294 \uc0c1\uc704 \uc9c0\uc5ed",
+        "\ud558\uc704 \uc9c0\uc5ed": "\uc778\uadfc \uc9c0\uc5ed",
+        "\uc2dc\ub3c4": "\uc9c0\uc5ed\ubcc4\ub85c \ucc3e\uae30",
+        "\ud615\uc81c \uc9c0\uc5ed": "\uc8fc\ubcc0 \uc9c0\uc5ed",
+        "\uac19\uc740 \uc9c0\uc5ed \uacfc\uc678": "\ud568\uaed8 \ubcf4\uba74 \uc88b\uc740 \uc9c0\uc5ed \uc815\ubcf4",
+        "\uc9c0\uc5ed \uba54\uc778": "\uad00\ub828 \uc9c0\uc5ed \uc815\ubcf4",
+        "\uacfc\uc678 \uc720\ud615": "\uacfc\uc678 \uc720\ud615\ubcc4 \uc815\ubcf4",
+        "\uc218\ud559\uacfc\uc678 \ud559\ub144\ubcc4 \uc815\ubcf4": "\uc218\ud559\uacfc\uc678 \ud559\ub144\ubcc4 \uc548\ub0b4",
+        "\uc601\uc5b4\uacfc\uc678 \ud559\ub144\ubcc4 \uc815\ubcf4": "\uc601\uc5b4\uacfc\uc678 \ud559\ub144\ubcc4 \uc548\ub0b4",
     }
-    return replacements.get(title, title.replace("허브", "정보"))
-
-
-def link_description(title: str) -> str:
-    if title.endswith("과외"):
-        return f"{title[:-2]} 지역 학습 정보"
-    return "관련 학습 정보"
+    return replacements.get(title.replace("\ud5c8\ube0c", "\uc815\ubcf4"), title.replace("\ud5c8\ube0c", "\uc815\ubcf4"))
 
 
 def link_description(title: str, section_title: str = "") -> str:
-    if "형제" in section_title or "인근" in section_title:
-        return "인근 지역의 학습 정보도 함께 확인해 보세요."
-    if "상위" in section_title:
-        return "상위 지역의 학습 흐름을 함께 살펴보세요."
-    if "같은 지역" in section_title:
-        return "같은 지역의 다른 과외 정보도 함께 살펴보세요."
-    if "학년" in section_title:
-        return f"{title}에 맞는 학년별 학습 정보를 확인해 보세요."
-    if "지역" in section_title:
-        return f"{title} 지역의 학습 정보를 차분히 살펴보세요."
-    if any(grade in title for grade in ("초등", "중등", "고등")):
-        return f"{title} 학생을 위한 학습 정보를 확인해 보세요."
-    return "관련 학습 정보를 함께 확인해 보세요."
+    variants = [
+        f"{title}\uc758 \ud559\uc2b5 \ud658\uacbd\uacfc \uad50\uc721 \uc815\ubcf4\ub97c \ud568\uaed8 \ud655\uc778\ud574 \ubcf4\uc138\uc694.",
+        f"{title} \ud559\uc0dd\ub4e4\uc774 \uc790\uc8fc \uc0b4\ud3b4\ubcf4\ub294 \ud559\uc2b5 \uc815\ubcf4\ub97c \uc815\ub9ac\ud588\uc2b5\ub2c8\ub2e4.",
+        f"{title}\uc640 \uc5f0\uacb0\ub41c \uc9c0\uc5ed, \uacfc\ubaa9, \ud559\ub144 \uc815\ubcf4\ub97c \ube44\uad50\ud574 \ubcf4\uc138\uc694.",
+        "\uc778\uadfc \uc9c0\uc5ed\uc758 \ud559\uc2b5 \uc815\ubcf4\ub3c4 \ud568\uaed8 \ube44\uad50\ud574 \ubcf4\uc138\uc694.",
+        "\uac19\uc740 \uacfc\ubaa9\uc758 \ub2e4\ub978 \uc9c0\uc5ed \uc815\ubcf4\ub3c4 \uc790\uc5f0\uc2a4\ub7fd\uac8c \uc774\uc5b4\uc11c \ubcfc \uc218 \uc788\uc2b5\ub2c8\ub2e4.",
+    ]
+    if "\uc8fc\ubcc0" in section_title or "\uc778\uadfc" in section_title:
+        return variants[3]
+    if "\uc0c1\uc704" in section_title:
+        return f"{title} \uc548\uc5d0\uc11c \uc774\uc5b4\uc9c0\ub294 \ud559\uc2b5 \ud750\ub984\uc744 \ud568\uaed8 \uc0b4\ud3b4\ubcf4\uc138\uc694."
+    if "\uac19\uc740 \uc9c0\uc5ed" in section_title or "\ud568\uaed8 \ubcf4\uba74" in section_title:
+        return "\uac19\uc740 \uc9c0\uc5ed\uc758 \ub2e4\ub978 \uacfc\uc678 \uc815\ubcf4\ub3c4 \ud568\uaed8 \uc0b4\ud3b4\ubcf4\uc138\uc694."
+    if "\ud559\ub144" in section_title:
+        return f"{title}\uc5d0 \ub9de\ub294 \ud559\ub144\ubcc4 \ud559\uc2b5 \ubc29\ud5a5\uc744 \ud655\uc778\ud574 \ubcf4\uc138\uc694."
+    if "\uc9c0\uc5ed" in section_title:
+        return variants[sum(ord(char) for char in title) % 3]
+    return variants[sum(ord(char) for char in title) % len(variants)]
+
+
+def link_description(title: str, section_title: str = "") -> str:
+    seed = sum(ord(char) for char in f"{section_title}:{title}")
+    nearby = [
+        f"{title}\uc758 \ud559\uc2b5 \ubd84\uc704\uae30\ub97c \ud568\uaed8 \ube44\uad50\ud574 \ubcf4\uc138\uc694.",
+        f"{title}\uc5d0\uc11c \uc774\uc5b4\uc9c0\ub294 \ud559\uc2b5 \ud750\ub984\ub3c4 \ucc28\ubd84\ud788 \uc0b4\ud3b4\ubcf4\uc138\uc694.",
+        f"{title} \uc8fc\ubcc0\uc758 \uad50\uc721 \uc815\ubcf4\ub97c \ud568\uaed8 \uc815\ub9ac\ud574 \ubcfc \uc218 \uc788\uc2b5\ub2c8\ub2e4.",
+        f"\uc778\uc811\ud55c {title} \uc815\ubcf4\ub97c \ube44\uad50\ud558\uba70 \ud559\uc2b5 \ubc29\ud5a5\uc744 \uc815\ub9ac\ud574 \ubcf4\uc138\uc694.",
+        f"{title} \ud559\uc0dd\ub4e4\uc774 \uc0b4\ud3b4\ubcfc \ub9cc\ud55c \uad50\uc721 \uc815\ubcf4\ub97c \ud568\uaed8 \ud655\uc778\ud574 \ubcf4\uc138\uc694.",
+    ]
+    parent = [
+        f"{title} \ubc94\uc704\uc5d0\uc11c \uc5f0\uacb0\ub418\ub294 \uc9c0\uc5ed \uc815\ubcf4\ub97c \uba3c\uc800 \uc0b4\ud3b4\ubcf4\uc138\uc694.",
+        f"{title}\uc758 \ud559\uc2b5 \ud658\uacbd\uc744 \ubcf4\uba74 \ud604\uc7ac \uc9c0\uc5ed \uc815\ubcf4\ub97c \ub354 \ub113\uac8c \uc774\ud574\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4.",
+        f"{title}\uc640 \ud568\uaed8 \ubcf4\uba74 \uc9c0\uc5ed \uacc4\uce35\uc744 \uc27d\uac8c \ud30c\uc545\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4.",
+    ]
+    same_region = [
+        f"{title}\uc758 \ub2e4\ub978 \uacfc\uc678 \uc815\ubcf4\ub97c \ud568\uaed8 \uc0b4\ud3b4\ubcf4\uc138\uc694.",
+        f"\uac19\uc740 \uc9c0\uc5ed\uc5d0\uc11c \uc5f0\uacb0\ub418\ub294 {title} \uc815\ubcf4\ub3c4 \ud655\uc778\ud560 \uc218 \uc788\uc2b5\ub2c8\ub2e4.",
+        f"{title}\ub97c \ud1b5\ud574 \uacfc\ubaa9\uacfc \ud559\ub144 \ud750\ub984\uc744 \ud568\uaed8 \ube44\uad50\ud574 \ubcf4\uc138\uc694.",
+    ]
+    grade = [
+        f"{title}\uc5d0 \ub9de\ub294 \ud559\ub144\ubcc4 \ud559\uc2b5 \ud750\ub984\uc744 \ud655\uc778\ud574 \ubcf4\uc138\uc694.",
+        f"{title}\uc758 \uc900\ube44 \ud3ec\uc778\ud2b8\ub97c \ud559\ub144 \ub2e8\uacc4\uc640 \ud568\uaed8 \uc815\ub9ac\ud574 \ubcf4\uc138\uc694.",
+        f"{title} \uc815\ubcf4\ub97c \ubcf4\uba74 \ud559\ub144\uc5d0 \ub530\ub978 \ud559\uc2b5 \ubc29\ud5a5\uc744 \uc138\uc6b0\uae30 \uc88b\uc2b5\ub2c8\ub2e4.",
+    ]
+    general = [
+        f"{title}\uc758 \ud559\uc2b5 \ud658\uacbd\uacfc \uad50\uc721 \uc815\ubcf4\ub97c \ud568\uaed8 \ud655\uc778\ud574 \ubcf4\uc138\uc694.",
+        f"{title}\uc640 \uc5f0\uacb0\ub41c \uc9c0\uc5ed, \uacfc\ubaa9, \ud559\ub144 \uc815\ubcf4\ub97c \ucc28\ubd84\ud788 \ube44\uad50\ud574 \ubcf4\uc138\uc694.",
+        f"{title} \uc815\ubcf4\ub97c \ubc14\ud0d5\uc73c\ub85c \ud559\uc2b5 \uc120\ud0dd\uc9c0\ub97c \ub354 \ub113\uac8c \uc0b4\ud3b4\ubcf4\uc138\uc694.",
+        f"{title} \ud559\uc0dd\ub4e4\uc774 \ucc38\uace0\ud560 \ub9cc\ud55c \ud559\uc2b5 \uc815\ubcf4\ub97c \ud568\uaed8 \uc815\ub9ac\ud588\uc2b5\ub2c8\ub2e4.",
+    ]
+    if "\uc8fc\ubcc0" in section_title or "\uc778\uadfc" in section_title:
+        choices = nearby
+    elif "\uc0c1\uc704" in section_title:
+        choices = parent
+    elif "\uac19\uc740 \uc9c0\uc5ed" in section_title or "\ud568\uaed8 \ubcf4\uba74" in section_title or "\uad00\ub828 \uc9c0\uc5ed" in section_title:
+        choices = same_region
+    elif "\ud559\ub144" in section_title or any(word in title for word in ("\ucd08\ub4f1", "\uc911\ub4f1", "\uace0\ub4f1")):
+        choices = grade
+    else:
+        choices = general
+    return choices[seed % len(choices)]
 
 
 def render_root_entry(root_page: Page) -> RenderedFile:

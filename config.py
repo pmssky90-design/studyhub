@@ -63,9 +63,17 @@ FIXED_IMAGES = [
 LOGO_IMAGE = "/assets/images/studyhub-logo.png"
 LOGO_IMAGE_WIDTH = 512
 LOGO_IMAGE_HEIGHT = 512
+FAVICON_ICO = "/assets/images/studynote-source/favicon.ico"
+FAVICON_16 = "/assets/images/studynote-source/favicon-16x16.png"
+FAVICON_32 = "/assets/images/studynote-source/favicon-32x32.png"
+APPLE_TOUCH_ICON = "/assets/images/studynote-source/apple-touch-icon.png"
+THEME_COLOR = "#0b2a55"
 OG_IMAGES = [
     f"/assets/images/og/image{index:02d}.webp"
     for index in range(1, 21)
 ]
+OG_IMAGE_WIDTH = 1254
+OG_IMAGE_HEIGHT = 1254
+OG_IMAGE_TYPE = "image/webp"
 DEFAULT_IMAGE = HERO_IMAGE
 ROBOTS_TEXT = f"User-agent: *\nAllow: /\n\nSitemap: {SITE_URL}/sitemap.xml\n"
