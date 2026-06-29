@@ -58,13 +58,6 @@ a:hover { text-decoration: none; }
   color: var(--navy);
 }
 
-.top-nav {
-  display: flex;
-  gap: 16px;
-  font-size: .94rem;
-  font-weight: 700;
-}
-
 main {
   width: min(1240px, calc(100% - 36px));
   margin: 0 auto;

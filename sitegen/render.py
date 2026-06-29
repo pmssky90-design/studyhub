@@ -45,10 +45,6 @@ def render_page(page: Page, include_hero: bool = False, asset_url: str | None = 
   <a class="skip-link" href="#main">본문 바로가기</a>
   <header class="site-header">
     <a class="brand" href="/">{escape(SITE_NAME)}</a>
-    <nav class="top-nav" aria-label="navigation">
-      <a href="/sitemap.xml">Sitemap</a>
-      <a href="/robots.txt">Robots</a>
-    </nav>
   </header>
   <main id="main">
     <nav class="breadcrumbs" aria-label="breadcrumb">{render_breadcrumbs(page.breadcrumb)}</nav>

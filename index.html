@@ -335,154 +335,468 @@
         min-height: 84px;
       }
     }
+    body {
+      background: #f7fbff;
+    }
+
+    .site-header {
+      justify-content: center;
+      min-height: 58px;
+      background: rgba(255, 255, 255, .96);
+      border-bottom: 1px solid #e8eef6;
+      box-shadow: 0 4px 18px rgba(15, 44, 83, .04);
+    }
+
+    .main-home {
+      width: min(1280px, calc(100% - 44px));
+      padding: 0 0 88px;
+    }
+
+    .hero-panel {
+      display: grid;
+      grid-template-columns: minmax(0, .92fr) minmax(440px, 1.08fr);
+      align-items: center;
+      gap: clamp(28px, 5vw, 70px);
+      padding: clamp(34px, 6vw, 74px);
+      margin-top: 28px;
+      border: 1px solid #e1ebf6;
+      border-radius: 32px;
+      background: linear-gradient(135deg, #ffffff 0%, #f4f9ff 100%);
+      box-shadow: 0 26px 80px rgba(8, 38, 85, .1);
+      overflow: hidden;
+    }
+
+    .hero-copy .eyebrow,
+    .section-kicker {
+      margin: 0 0 12px;
+      color: #1d63b7;
+      font-weight: 900;
+      font-size: .95rem;
+    }
+
+    .hero-copy h1 {
+      margin: 0 0 20px;
+      color: #082655;
+      font-size: clamp(2.15rem, 3.25vw, 3.55rem);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .hero-copy p {
+      margin: 0;
+      max-width: 640px;
+      color: #40516a;
+      font-size: clamp(1.02rem, 1.45vw, 1.18rem);
+      line-height: 1.9;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .primary-cta,
+    .secondary-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 0 22px;
+      border-radius: 999px;
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .primary-cta {
+      background: #1268d6;
+      color: #fff;
+      box-shadow: 0 12px 28px rgba(18, 104, 214, .22);
+    }
+
+    .secondary-cta {
+      background: #fff;
+      color: #0d4f9f;
+      border: 1px solid #d8e6f5;
+    }
+
+    .hero-media {
+      margin: 0;
+      border-radius: 26px;
+      overflow: hidden;
+      background: #eef6ff;
+      box-shadow: 0 18px 50px rgba(8, 38, 85, .13);
+    }
+
+    .hero-media img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .guide-cards {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: -34px;
+      padding: 0 clamp(18px, 4vw, 58px);
+      position: relative;
+      z-index: 2;
+    }
+
+    .guide-card,
+    .feature-item,
+    .category-card,
+    .article-card,
+    .link-panel {
+      border: 1px solid #e2ebf6;
+      background: rgba(255, 255, 255, .98);
+      box-shadow: 0 14px 36px rgba(18, 39, 73, .08);
+    }
+
+    .guide-card {
+      min-height: 142px;
+      padding: 22px 18px;
+      border-radius: 22px;
+      text-align: center;
+    }
+
+    .guide-icon,
+    .feature-icon,
+    .category-icon {
+      display: inline-grid;
+      place-items: center;
+      width: 54px;
+      height: 54px;
+      margin-bottom: 14px;
+      border-radius: 18px;
+      background: #edf5ff;
+      color: #0f5fbd;
+      font-weight: 900;
+    }
+
+    .guide-card strong,
+    .feature-item strong,
+    .category-card strong,
+    .article-card strong {
+      display: block;
+      color: #082655;
+      font-size: 1.06rem;
+      line-height: 1.35;
+    }
+
+    .guide-card span,
+    .feature-item span,
+    .category-card span,
+    .article-card p {
+      display: block;
+      margin-top: 8px;
+      color: #607086;
+      line-height: 1.65;
+      font-size: .95rem;
+    }
+
+    .intro-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(360px, .78fr);
+      gap: clamp(26px, 4vw, 58px);
+      padding: clamp(30px, 5vw, 58px);
+      border: 1px solid #dfe9f5;
+      border-radius: 28px;
+      background: #fff;
+      box-shadow: 0 18px 54px rgba(18, 39, 73, .08);
+    }
+
+    .intro-copy h2,
+    .section-head h2,
+    .link-panel h2 {
+      margin: 0;
+      color: #082655;
+      font-size: clamp(1.75rem, 3vw, 2.55rem);
+      line-height: 1.22;
+      letter-spacing: 0;
+    }
+
+    .feature-list {
+      display: grid;
+      gap: 16px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .feature-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 16px;
+      align-items: center;
+      padding: 18px;
+      border-radius: 20px;
+    }
+
+    .feature-icon {
+      margin: 0;
+      width: 50px;
+      height: 50px;
+      border-radius: 16px;
+    }
+
+    .category-grid,
+    .article-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .category-card,
+    .article-card {
+      overflow: hidden;
+      border-radius: 24px;
+      text-decoration: none;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .category-card {
+      display: grid;
+      min-height: 220px;
+      padding: 28px;
+    }
+
+    .category-card:hover,
+    .article-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 44px rgba(18, 39, 73, .12);
+    }
+
+    .category-card .arrow,
+    .article-card .arrow {
+      align-self: end;
+      margin-top: 22px;
+      color: #1268d6;
+      font-weight: 900;
+    }
+
+    .link-panel {
+      margin-top: 34px;
+      padding: clamp(26px, 4vw, 42px);
+      border-radius: 28px;
+    }
+
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .button-grid.popular {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .home-link {
+      display: block;
+      min-height: auto;
+      padding: 14px 16px;
+      border-radius: 16px;
+      color: #0d4f9f;
+      font-weight: 900;
+      text-align: center;
+      text-decoration: none;
+      background: linear-gradient(180deg, #fff 0%, #f7fbff 100%);
+    }
+
+    .article-card img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      height: auto;
+      object-fit: cover;
+      background: #edf5ff;
+    }
+
+    .article-body {
+      display: block;
+      padding: 22px;
+    }
+
+    .article-meta {
+      display: block;
+      margin-bottom: 8px;
+      color: #1d63b7;
+      font-size: .88rem;
+      font-weight: 900;
+    }
+
+    @media (max-width: 1120px) {
+      .hero-panel,
+      .intro-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .guide-cards {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin-top: 24px;
+        padding: 0;
+      }
+
+      .button-grid,
+      .button-grid.popular {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .main-home {
+        width: min(100% - 28px, 1280px);
+      }
+
+      .site-header {
+        justify-content: flex-start;
+      }
+
+      .hero-panel {
+        padding: 26px;
+        margin-top: 18px;
+        border-radius: 24px;
+      }
+
+      .guide-cards,
+      .category-grid,
+      .article-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .button-grid,
+      .button-grid.popular {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .section-head {
+        display: block;
+      }
+    }
   </style>
 </head>
 <body>
   <a class="skip-link" href="#main">본문 바로가기</a>
   <header class="site-header">
     <a class="brand" href="/">StudyHub</a>
-    <nav class="top-nav" aria-label="navigation">
-      <a href="/sitemap.xml">Sitemap</a>
-      <a href="/robots.txt">Robots</a>
-    </nav>
   </header>
 
   <main id="main" class="main-home">
     <nav class="breadcrumbs" aria-label="breadcrumb"><ol><li><a href="https://studyhub.co.kr/%EC%A0%84%EA%B5%AD%EA%B3%BC%EC%99%B8/">전국과외</a></li></ol></nav>
 
-    <section class="home-hero" aria-label="StudyHub 대표 이미지">
-      <img src="/assets/images/studyhub-main-hero.png" alt="StudyHub 전국 맞춤형 과외 정보 플랫폼" width="1536" height="1024" loading="eager" decoding="async">
-    </section>
-
-    <section class="intro-section" aria-labelledby="home-title">
-      <article class="intro-copy">
+    <section class="hero-panel" aria-labelledby="home-title">
+      <div class="hero-copy">
         <p class="eyebrow">전국 맞춤형 과외 정보 플랫폼</p>
-        <h1 id="home-title">StudyHub</h1>
-        <p>StudyHub는 지역과 과목, 학년 기준으로 과외 정보를 빠르게 찾아볼 수 있도록 정리한 교육 정보 플랫폼입니다. 학부모와 학생은 먼저 거주 지역을 기준으로 주변 학습 환경을 살펴보고, 필요한 경우 수학과외와 영어과외, 초등과외와 중등과외, 고등과외처럼 목적에 맞는 분류로 바로 이동할 수 있습니다. 메인의 역할은 사이트를 설명하는 데서 끝나지 않고, 사용자가 원하는 페이지를 가장 빠르게 찾도록 돕는 것입니다.</p>
-        <p>StudyHub의 탐색 구조는 전국 단위에서 시작해 시도, 시군구, 읍면동으로 좁혀 가는 지역 흐름과 과목, 학년, 과목과 학년을 함께 보는 흐름을 함께 제공합니다. 지역을 먼저 선택하면 가까운 생활권과 학습 수요를 기준으로 정보를 확인할 수 있고, 과목을 먼저 선택하면 같은 수학과외나 영어과외 안에서도 지역별 차이를 비교하기 쉽습니다. 학년을 먼저 선택하는 경우에는 초등, 중등, 고등 단계별로 필요한 학습 방향을 분리해 살펴볼 수 있습니다.</p>
-        <p>이 사이트는 실제 생성된 페이지를 기준으로 링크를 연결합니다. 존재하지 않는 페이지를 메인에 억지로 노출하지 않으며, 지역과 서비스 구조가 확장되면 메인 탐색도 그 흐름에 맞춰 자연스럽게 정리됩니다. 사용자는 긴 목록을 무작정 훑기보다 지역, 인기지역, 과목, 대표 과목 순서로 필요한 페이지를 선택할 수 있습니다. StudyHub는 과외 정보를 광고처럼 보여주는 것보다, 지역별 학습 환경과 과목별 탐색 경로를 안정적으로 정리해 신뢰할 수 있는 출발점을 제공하는 데 초점을 둡니다.</p>
-        <p>처음 방문한 사용자는 지역으로 시작해도 좋고, 이미 필요한 과목이 정해져 있다면 과목으로 바로 이동해도 좋습니다. 여러 자녀의 학년이 다르거나 수학과 영어를 함께 비교해야 하는 경우에는 대표 과목 영역을 활용하면 더 빠르게 목적지에 도달할 수 있습니다. StudyHub는 전국 단위의 넓은 정보 안에서도 사용자가 길을 잃지 않도록, 핵심 경로를 메인 화면에서 명확하게 보여주는 탐색 중심의 교육 정보 플랫폼입니다.</p>
-      </article>
-      <aside class="intro-points" aria-label="StudyHub 소개">
-        <div class="point-card"><strong>StudyHub 특징</strong><span>전국 지역 데이터를 기반으로 과외 정보 구조를 체계적으로 정리합니다.</span></div>
-        <div class="point-card"><strong>지역별 구성</strong><span>시도, 시군구, 읍면동 단위로 학습 정보를 따라갈 수 있습니다.</span></div>
-        <div class="point-card"><strong>과목별 탐색</strong><span>수학과외와 영어과외를 지역 흐름에 맞춰 쉽게 비교합니다.</span></div>
-        <div class="point-card"><strong>학년별 제공</strong><span>초등, 중등, 고등 단계의 정보를 함께 살펴볼 수 있습니다.</span></div>
-        <div class="point-card"><strong>실제 페이지 기준</strong><span>생성된 페이지가 있는 항목만 메인에서 연결합니다.</span></div>
-      </aside>
+        <h1 id="home-title">우리 아이에게 맞는 학습 정보를 빠르게 찾아보세요</h1>
+        <p>StudyHub는 전국 지역별 학습 환경과 학생 수준에 맞는 과외 정보를 지역, 과목, 학년 기준으로 정리한 교육 정보 플랫폼입니다. 복잡한 목록을 오래 훑지 않아도 원하는 지역과 학습 목적에 맞는 페이지로 바로 이동할 수 있도록 구성했습니다.</p>
+        <div class="hero-actions">
+          <a class="primary-cta" href="/서울과외/">지역별 정보 보기</a>
+          <a class="secondary-cta" href="/수학과외/">과목별 정보 보기</a>
+        </div>
+      </div>
+      <figure class="hero-media">
+        <img src="/assets/images/studyhub-main-hero.png" alt="StudyHub 전국 맞춤형 과외 정보 플랫폼" width="1536" height="1024" loading="eager" decoding="async">
+      </figure>
     </section>
 
-    <section class="home-section" aria-labelledby="region-heading">
+    <section class="guide-cards" aria-label="StudyHub 주요 안내">
+      <article class="guide-card"><span class="guide-icon">학</span><strong>학습 가이드</strong><span>과목별 학습 전략과 공부 방향을 확인합니다.</span></article>
+      <article class="guide-card"><span class="guide-icon">지</span><strong>지역 정보</strong><span>전국 지역별 학습 환경을 한눈에 살펴봅니다.</span></article>
+      <article class="guide-card"><span class="guide-icon">년</span><strong>학년 정보</strong><span>초등, 중등, 고등 단계별 흐름을 정리합니다.</span></article>
+      <article class="guide-card"><span class="guide-icon">과</span><strong>과목 정보</strong><span>수학과 영어 중심의 학습 정보를 비교합니다.</span></article>
+      <article class="guide-card"><span class="guide-icon">맞</span><strong>1:1 맞춤 정보</strong><span>학생 수준과 목적에 맞는 탐색을 돕습니다.</span></article>
+    </section>
+
+    <section class="home-section intro-panel" aria-labelledby="intro-heading">
+      <article class="intro-copy">
+        <p class="section-kicker">StudyHub 소개</p>
+        <h2 id="intro-heading">지역과 학습 목적을 함께 보는 교육 정보 플랫폼</h2>
+        <p>StudyHub는 지역과 과목, 학년 기준으로 과외 정보를 빠르게 찾아볼 수 있도록 정리한 교육 정보 플랫폼입니다. 학부모와 학생은 먼저 거주 지역을 기준으로 주변 학습 환경을 살펴보고, 필요한 경우 수학과외와 영어과외, 초등과외와 중등과외, 고등과외처럼 목적에 맞는 분류로 이동할 수 있습니다.</p>
+        <p>전국 단위에서 시작해 시도, 시군구, 읍면동으로 좁혀 가는 지역 흐름과 과목, 학년, 과목과 학년을 함께 보는 흐름을 함께 제공합니다. 실제 생성된 페이지를 기준으로 연결하므로 존재하지 않는 페이지를 억지로 노출하지 않고, 사용자가 현재 필요한 기준에서 정보를 안정적으로 확인할 수 있습니다.</p>
+      </article>
+      <ul class="feature-list" aria-label="StudyHub 핵심 특징">
+        <li class="feature-item"><span class="feature-icon">전</span><div><strong>전국 지역 데이터 기반</strong><span>시도, 시군구, 읍면동 단위로 학습 정보를 따라갈 수 있습니다.</span></div></li>
+        <li class="feature-item"><span class="feature-icon">과</span><div><strong>과목별 맞춤 탐색</strong><span>수학과외와 영어과외를 지역 흐름에 맞춰 쉽게 비교합니다.</span></div></li>
+        <li class="feature-item"><span class="feature-icon">학</span><div><strong>학년별 핵심 포인트</strong><span>초등, 중등, 고등 단계별 학습 방향을 함께 살펴봅니다.</span></div></li>
+        <li class="feature-item"><span class="feature-icon">연</span><div><strong>실제 페이지 기준 연결</strong><span>현재 생성된 페이지가 있는 항목만 탐색 영역에 연결합니다.</span></div></li>
+      </ul>
+    </section>
+
+    <section class="home-section category-grid" aria-label="메인 카테고리">
+      <a class="category-card" href="/서울과외/"><span class="category-icon">지</span><strong>지역별 정보</strong><span>전국 시도부터 세부 지역까지 생활권에 맞는 학습 정보를 확인하세요.</span><span class="arrow">지역별 정보 보기</span></a>
+      <a class="category-card" href="/수학과외/"><span class="category-icon">과</span><strong>과목별 정보</strong><span>수학과외와 영어과외처럼 목적이 분명한 학습 정보를 비교하세요.</span><span class="arrow">과목별 정보 보기</span></a>
+      <a class="category-card" href="/초등과외/"><span class="category-icon">학</span><strong>학년별 정보</strong><span>초등, 중등, 고등 단계에 맞는 학습 흐름을 살펴보세요.</span><span class="arrow">학년별 정보 보기</span></a>
+    </section>
+
+    <section class="home-section link-panel" aria-labelledby="region-heading">
       <div class="section-head">
         <h2 id="region-heading">지역으로 찾기</h2>
         <p>전국 주요 지역 페이지로 바로 이동합니다.</p>
       </div>
-      <ul class="wide-link-grid">
-        <li><a class="home-link" href="/서울과외/"><strong>서울</strong><span>서울 지역 정보</span></a></li>
-        <li><a class="home-link" href="/경기과외/"><strong>경기</strong><span>경기 지역 정보</span></a></li>
-        <li><a class="home-link" href="/인천과외/"><strong>인천</strong><span>인천 지역 정보</span></a></li>
-        <li><a class="home-link" href="/부산과외/"><strong>부산</strong><span>부산 지역 정보</span></a></li>
-        <li><a class="home-link" href="/대구과외/"><strong>대구</strong><span>대구 지역 정보</span></a></li>
-        <li><a class="home-link" href="/광주과외/"><strong>광주</strong><span>광주 지역 정보</span></a></li>
-        <li><a class="home-link" href="/대전과외/"><strong>대전</strong><span>대전 지역 정보</span></a></li>
-        <li><a class="home-link" href="/울산과외/"><strong>울산</strong><span>울산 지역 정보</span></a></li>
-        <li><a class="home-link" href="/세종과외/"><strong>세종</strong><span>세종 지역 정보</span></a></li>
-        <li><a class="home-link" href="/강원과외/"><strong>강원</strong><span>강원 지역 정보</span></a></li>
-        <li><a class="home-link" href="/충북과외/"><strong>충북</strong><span>충북 지역 정보</span></a></li>
-        <li><a class="home-link" href="/충남과외/"><strong>충남</strong><span>충남 지역 정보</span></a></li>
-        <li><a class="home-link" href="/전북과외/"><strong>전북</strong><span>전북 지역 정보</span></a></li>
-        <li><a class="home-link" href="/전남과외/"><strong>전남</strong><span>전남 지역 정보</span></a></li>
-        <li><a class="home-link" href="/경북과외/"><strong>경북</strong><span>경북 지역 정보</span></a></li>
-        <li><a class="home-link" href="/경남과외/"><strong>경남</strong><span>경남 지역 정보</span></a></li>
-        <li><a class="home-link" href="/제주과외/"><strong>제주</strong><span>제주 지역 정보</span></a></li>
+      <ul class="button-grid">
+        <li><a class="home-link" href="/서울과외/">서울</a></li>
+        <li><a class="home-link" href="/경기과외/">경기</a></li>
+        <li><a class="home-link" href="/인천과외/">인천</a></li>
+        <li><a class="home-link" href="/부산과외/">부산</a></li>
+        <li><a class="home-link" href="/대구과외/">대구</a></li>
+        <li><a class="home-link" href="/광주과외/">광주</a></li>
+        <li><a class="home-link" href="/대전과외/">대전</a></li>
+        <li><a class="home-link" href="/울산과외/">울산</a></li>
+        <li><a class="home-link" href="/세종과외/">세종</a></li>
+        <li><a class="home-link" href="/강원과외/">강원</a></li>
+        <li><a class="home-link" href="/충북과외/">충북</a></li>
+        <li><a class="home-link" href="/충남과외/">충남</a></li>
+        <li><a class="home-link" href="/전북과외/">전북</a></li>
+        <li><a class="home-link" href="/전남과외/">전남</a></li>
+        <li><a class="home-link" href="/경북과외/">경북</a></li>
+        <li><a class="home-link" href="/경남과외/">경남</a></li>
+        <li><a class="home-link" href="/제주과외/">제주</a></li>
       </ul>
     </section>
 
-    <section class="home-section" aria-labelledby="popular-heading">
+    <section class="home-section link-panel" aria-labelledby="popular-heading">
       <div class="section-head">
         <h2 id="popular-heading">인기지역</h2>
         <p>탐색 빈도가 높은 주요 지역 페이지입니다.</p>
       </div>
-      <ul class="wide-link-grid popular">
-        <li><a class="home-link" href="/서울과외/강남구과외/"><strong>강남구</strong><span>서울 강남구 정보</span></a></li>
-        <li><a class="home-link" href="/서울과외/송파구과외/"><strong>송파구</strong><span>서울 송파구 정보</span></a></li>
-        <li><a class="home-link" href="/서울과외/서초구과외/"><strong>서초구</strong><span>서울 서초구 정보</span></a></li>
-        <li><a class="home-link" href="/부산과외/해운대구과외/"><strong>해운대구</strong><span>부산 해운대구 정보</span></a></li>
-        <li><a class="home-link" href="/인천과외/연수구과외/"><strong>연수구</strong><span>인천 연수구 정보</span></a></li>
-        <li><a class="home-link" href="/대구과외/수성구과외/"><strong>수성구</strong><span>대구 수성구 정보</span></a></li>
-        <li><a class="home-link" href="/제주과외/제주시과외/"><strong>제주시</strong><span>제주 제주시 정보</span></a></li>
-        <li><a class="home-link" href="/전남과외/목포시과외/"><strong>목포시</strong><span>전남 목포시 정보</span></a></li>
+      <ul class="button-grid popular">
+        <li><a class="home-link" href="/서울과외/강남구과외/">강남구</a></li>
+        <li><a class="home-link" href="/서울과외/송파구과외/">송파구</a></li>
+        <li><a class="home-link" href="/서울과외/서초구과외/">서초구</a></li>
+        <li><a class="home-link" href="/부산과외/해운대구과외/">해운대구</a></li>
+        <li><a class="home-link" href="/인천과외/연수구과외/">연수구</a></li>
+        <li><a class="home-link" href="/대구과외/수성구과외/">수성구</a></li>
+        <li><a class="home-link" href="/제주과외/제주시과외/">제주시</a></li>
+        <li><a class="home-link" href="/전남과외/목포시과외/">목포시</a></li>
       </ul>
     </section>
 
-    <section class="home-section" aria-labelledby="subject-heading">
+    <section class="home-section link-panel" aria-labelledby="subject-heading">
       <div class="section-head">
-        <h2 id="subject-heading">과목으로 찾기</h2>
-        <p>과목과 학년을 먼저 선택해 필요한 지역 정보를 좁혀갑니다.</p>
+        <h2 id="subject-heading">최신 학습 정보</h2>
+        <p>지역과 과목, 학년 흐름을 함께 볼 수 있는 주요 학습 정보입니다.</p>
       </div>
-      <ul class="wide-link-grid subjects">
-        <li><a class="home-link" href="/수학과외/"><strong>수학과외</strong><span>수학과외 지역별 정보</span></a></li>
-        <li><a class="home-link" href="/영어과외/"><strong>영어과외</strong><span>영어과외 지역별 정보</span></a></li>
-        <li><a class="home-link" href="/초등과외/"><strong>초등과외</strong><span>초등과외 지역별 정보</span></a></li>
-        <li><a class="home-link" href="/중등과외/"><strong>중등과외</strong><span>중등과외 지역별 정보</span></a></li>
-        <li><a class="home-link" href="/고등과외/"><strong>고등과외</strong><span>고등과외 지역별 정보</span></a></li>
-      </ul>
+      <div class="article-grid">
+        <a class="article-card" href="/수학과외/"><img src="/assets/images/og/image01.webp" alt="수학과외 학습 정보" width="1200" height="630" loading="lazy" decoding="async"><span class="article-body"><span class="article-meta">과목별 정보</span><strong>수학과외 지역별 학습 전략</strong><p>지역별 수학 학습 환경과 학생 수준에 맞춘 탐색 흐름을 확인합니다.</p><span class="arrow">자세히 보기</span></span></a>
+        <a class="article-card" href="/영어과외/"><img src="/assets/images/og/image02.webp" alt="영어과외 학습 정보" width="1200" height="630" loading="lazy" decoding="async"><span class="article-body"><span class="article-meta">과목별 정보</span><strong>영어과외 지역별 학습 안내</strong><p>영어 학습 목표와 지역별 수요를 함께 살펴볼 수 있습니다.</p><span class="arrow">자세히 보기</span></span></a>
+        <a class="article-card" href="/초등과외/"><img src="/assets/images/og/image03.webp" alt="초등과외 학습 정보" width="1200" height="630" loading="lazy" decoding="async"><span class="article-body"><span class="article-meta">학년별 정보</span><strong>초등과외 시작 전 확인할 점</strong><p>초등 단계에서 필요한 학습 습관과 과목 흐름을 정리합니다.</p><span class="arrow">자세히 보기</span></span></a>
+      </div>
     </section>
 
-    <section class="home-section" aria-labelledby="featured-heading">
+    <section class="home-section link-panel" aria-labelledby="featured-heading">
       <div class="section-head">
-        <h2 id="featured-heading">대표 과목</h2>
+        <h2 id="featured-heading">인기 학습 정보</h2>
         <p>학년과 과목을 함께 선택할 때 자주 사용하는 대표 분류입니다.</p>
       </div>
-      <ul class="wide-link-grid featured">
-        <li><a class="home-link" href="/초등수학과외/"><strong>초등수학과외</strong><span>초등 수학 지역별 정보</span></a></li>
-        <li><a class="home-link" href="/중등수학과외/"><strong>중등수학과외</strong><span>중등 수학 지역별 정보</span></a></li>
-        <li><a class="home-link" href="/고등수학과외/"><strong>고등수학과외</strong><span>고등 수학 지역별 정보</span></a></li>
-        <li><a class="home-link" href="/초등영어과외/"><strong>초등영어과외</strong><span>초등 영어 지역별 정보</span></a></li>
-        <li><a class="home-link" href="/중등영어과외/"><strong>중등영어과외</strong><span>중등 영어 지역별 정보</span></a></li>
-        <li><a class="home-link" href="/고등영어과외/"><strong>고등영어과외</strong><span>고등 영어 지역별 정보</span></a></li>
-      </ul>
-    </section>
-
-    <section class="brand-story" aria-labelledby="story-heading">
-      <h2 id="story-heading">StudyHub가 정리하는 학습 정보</h2>
-      <p>과외 정보는 단순히 과목명만으로 선택하기 어렵습니다. 같은 수학과외라도 초등과 중등, 고등 단계에서 필요한 학습 목표가 다르고, 같은 영어과외라도 지역별 학습 수요와 준비 방향이 달라질 수 있습니다. StudyHub는 이런 차이를 지역, 과목, 학년의 구조로 나누어 사용자가 현재 필요한 기준에서 정보를 확인하도록 돕습니다.</p>
-      <p>메인 화면은 StudyHub 전체 구조의 출발점입니다. 지역으로 찾기에서는 생활권을 기준으로 이동하고, 인기지역에서는 자주 찾는 주요 지역을 빠르게 확인할 수 있습니다. 과목으로 찾기와 대표 과목 영역은 학습 목적이 이미 정해진 사용자에게 적합합니다. 이 흐름은 사용자가 여러 경로를 오가더라도 같은 구조 안에서 정보를 이해할 수 있도록 설계되어 있습니다.</p>
-    </section>
-
-    <section class="guide-band" aria-labelledby="guide-heading">
-      <div>
-        <h2 id="guide-heading">StudyHub 이용 안내</h2>
-        <p>StudyHub는 사용자가 원하는 과외 정보 페이지로 빠르게 이동하도록 돕는 탐색 중심 사이트입니다. 오른쪽이나 하단의 소개 영역은 반복 링크를 제공하기보다, 사이트가 어떤 기준으로 구성되어 있는지 설명하는 역할을 합니다. 사용자는 위의 지역, 인기지역, 과목, 대표 과목 섹션에서 실제 생성된 페이지로 이동할 수 있습니다.</p>
-      </div>
-      <ul class="trust-list" aria-label="StudyHub 구성 기준">
-        <li>전국 지역 데이터를 기반으로 구성</li>
-        <li>지역별 학습 정보를 체계적으로 정리</li>
-        <li>과목별 학습 정보를 쉽게 탐색</li>
-        <li>학년별 학습 정보를 함께 제공</li>
-        <li>실제 생성된 페이지를 기준으로 연결</li>
-      </ul>
-    </section>
-
-    <section class="faq-section" aria-labelledby="faq-heading">
-      <h2 id="faq-heading">FAQ</h2>
-      <div class="faq-grid">
-        <article class="faq-card">
-          <h3>StudyHub는 어떤 사이트인가요?</h3>
-          <p>전국 지역별 과외 정보를 지역, 과목, 학년 기준으로 찾아볼 수 있도록 정리한 교육 정보 플랫폼입니다.</p>
-        </article>
-        <article class="faq-card">
-          <h3>메인에서는 무엇을 먼저 보면 되나요?</h3>
-          <p>지역이 중요하면 지역으로 찾기를, 과목이 정해져 있으면 과목으로 찾기와 대표 과목을 먼저 보면 됩니다.</p>
-        </article>
-        <article class="faq-card">
-          <h3>없는 페이지도 링크되나요?</h3>
-          <p>메인 링크는 현재 생성된 페이지를 기준으로 구성하며, 없는 페이지는 탐색 영역에 노출하지 않습니다.</p>
-        </article>
-        <article class="faq-card">
-          <h3>학년별 정보도 함께 볼 수 있나요?</h3>
-          <p>초등, 중등, 고등 과외와 학년별 수학, 영어 과외 페이지를 대표 과목 영역에서 확인할 수 있습니다.</p>
-        </article>
+      <div class="article-grid">
+        <a class="article-card" href="/중등과외/"><img src="/assets/images/og/image04.webp" alt="중등과외 학습 정보" width="1200" height="630" loading="lazy" decoding="async"><span class="article-body"><span class="article-meta">학년별 정보</span><strong>중등과외 학습 흐름</strong><p>내신과 개념 이해를 함께 고려하는 중등 학습 정보를 확인합니다.</p><span class="arrow">자세히 보기</span></span></a>
+        <a class="article-card" href="/고등과외/"><img src="/assets/images/og/image05.webp" alt="고등과외 학습 정보" width="1200" height="630" loading="lazy" decoding="async"><span class="article-body"><span class="article-meta">학년별 정보</span><strong>고등과외 준비 방향</strong><p>시험 대비와 과목별 학습 목표를 함께 살펴볼 수 있습니다.</p><span class="arrow">자세히 보기</span></span></a>
+        <a class="article-card" href="/초등수학과외/"><img src="/assets/images/og/image06.webp" alt="초등수학과외 학습 정보" width="1200" height="630" loading="lazy" decoding="async"><span class="article-body"><span class="article-meta">대표 과목</span><strong>초등수학과외 핵심 안내</strong><p>초등 수학의 기초 습관과 지역별 학습 정보를 함께 확인합니다.</p><span class="arrow">자세히 보기</span></span></a>
       </div>
     </section>
   </main>
