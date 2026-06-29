@@ -16,6 +16,8 @@ def render_site(pages: list[Page]) -> list[RenderedFile]:
     files = [RenderedFile(page.url, render_page(page)) for page in pages]
     files.append(render_root_entry(pages[0]))
     files.append(render_sitemap(pages))
+    files.append(render_html_sitemap(pages))
+    files.append(render_404_page())
     return files
 
 
@@ -443,3 +445,87 @@ def render_sitemap(pages: list[Page]) -> RenderedFile:
         )
     lines.append("</urlset>")
     return RenderedFile("/sitemap.xml", "\n".join(lines))
+
+
+def render_html_sitemap(pages: list[Page]) -> RenderedFile:
+    links = "\n".join(
+        f'<li><a href="{escape(page.url)}">{escape(page.title)}</a></li>'
+        for page in pages
+    )
+    html = f"""<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>StudyHub 사이트맵</title>
+  <meta name="robots" content="noindex,follow">
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="brand" href="/">StudyHub</a>
+  </header>
+  <main id="main">
+    <section class="page-heading">
+      <p class="eyebrow">StudyHub</p>
+      <h1>사이트맵</h1>
+      <p>StudyHub에서 생성된 페이지를 한곳에서 확인할 수 있습니다.</p>
+    </section>
+    <section class="page-content">
+      <article class="info-card">
+        <h2 id="sitemap-pages">전체 페이지</h2>
+        <ul class="sitemap-list">
+          {links}
+        </ul>
+      </article>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <p>StudyHub</p>
+  </footer>
+</body>
+</html>
+"""
+    return RenderedFile("/sitemap.html", html)
+
+
+def render_404_page() -> RenderedFile:
+    html = """<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>페이지를 찾을 수 없습니다 | StudyHub</title>
+  <meta name="robots" content="noindex,follow">
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="brand" href="/">StudyHub</a>
+  </header>
+  <main id="main">
+    <section class="page-heading">
+      <p class="eyebrow">StudyHub</p>
+      <h1>페이지를 찾을 수 없습니다</h1>
+      <p>주소가 변경되었거나 아직 생성되지 않은 페이지입니다.</p>
+    </section>
+    <section class="page-content">
+      <article class="info-card">
+        <h2 id="return-home">다시 찾기</h2>
+        <p>StudyHub 메인과 사이트맵에서 원하는 지역과 과목 정보를 다시 확인해 보세요.</p>
+        <ul>
+          <li><a href="/">StudyHub 메인</a></li>
+          <li><a href="/sitemap.html">사이트맵</a></li>
+        </ul>
+      </article>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <p>StudyHub</p>
+  </footer>
+</body>
+</html>
+"""
+    return RenderedFile("/404.html", html)
