@@ -1,6 +1,6 @@
 import shutil
 
-from config import ASSETS_DIR, OUTPUT_DIR, ROBOTS_TEXT
+from config import ASSETS_DIR, FAVICON_ICO_SOURCE, OUTPUT_DIR, ROBOTS_TEXT
 from sitegen.pages import RenderedFile
 from sitegen.urls import output_path
 from sitegen.utils import reset_dir
@@ -18,6 +18,8 @@ def write_site(files: list[RenderedFile]) -> None:
 def copy_assets() -> None:
     if ASSETS_DIR.exists():
         shutil.copytree(ASSETS_DIR, OUTPUT_DIR / "assets", dirs_exist_ok=True)
+    if FAVICON_ICO_SOURCE.exists():
+        shutil.copy2(FAVICON_ICO_SOURCE, OUTPUT_DIR / "favicon.ico")
 
 
 def write_file(file: RenderedFile) -> None:
@@ -35,4 +37,3 @@ def remove_empty_dirs() -> None:
             path.rmdir()
         except OSError:
             pass
-
