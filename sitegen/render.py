@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from dataclasses import replace
 import hashlib
 import re
 
@@ -221,8 +222,23 @@ def render_faq_content(html: str) -> str:
 
 
 def enhance_content_html(html: str) -> str:
+    html = sanitize_content_fragment(html)
     html = add_heading_ids(html)
     return add_image_attributes(html)
+
+
+def sanitize_content_fragment(html: str) -> str:
+    html = html.strip()
+    if not html:
+        return ""
+    body_match = re.search(r"<body\b[^>]*>(.*?)</body>", html, flags=re.IGNORECASE | re.DOTALL)
+    if body_match:
+        html = body_match.group(1)
+    html = re.sub(r"<!doctype[^>]*>", "", html, flags=re.IGNORECASE)
+    html = re.sub(r"</?(?:html|head|body)\b[^>]*>", "", html, flags=re.IGNORECASE)
+    html = re.sub(r"<title\b[^>]*>.*?</title>", "", html, flags=re.IGNORECASE | re.DOTALL)
+    html = re.sub(r"<meta\b[^>]*charset[^>]*>", "", html, flags=re.IGNORECASE)
+    return html.strip()
 
 
 def add_heading_ids(html: str) -> str:
@@ -444,7 +460,13 @@ def link_description(title: str, section_title: str = "") -> str:
 
 
 def render_root_entry(root_page: Page) -> RenderedFile:
-    return RenderedFile("/", render_page(root_page, include_hero=True, asset_url="/"))
+    root_url = f"{SITE_URL.rstrip('/')}/"
+    page = replace(
+        root_page,
+        canonical=root_url,
+        breadcrumb=[{"name": root_page.title, "url": root_url}],
+    )
+    return RenderedFile("/", render_page(page, include_hero=True, asset_url="/"))
 
 
 def render_sitemap(pages: list[Page]) -> RenderedFile:
@@ -453,6 +475,16 @@ def render_sitemap(pages: list[Page]) -> RenderedFile:
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
     ]
+    root_url = f"{SITE_URL.rstrip('/')}/"
+    lines.extend(
+        [
+            "  <url>",
+            f"    <loc>{root_url}</loc>",
+            f"    <lastmod>{lastmod}</lastmod>",
+            "    <changefreq>weekly</changefreq>",
+            "  </url>",
+        ]
+    )
     for page in pages:
         lines.extend(
             [
