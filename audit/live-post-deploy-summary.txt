@@ -1,0 +1,11 @@
+sitemap_urls: 9612
+http_200: 9612
+non_200: 0
+canonical_conflicts: 0
+noindex: 0
+jsonld_errors: 0
+orphan_pages: 0
+reachable_pages: 9612
+max_depth: 5
+depth_counts: {0: 1, 1: 36, 2: 306, 3: 1612, 4: 4124, 5: 3533}
+elapsed_seconds: 618.1
