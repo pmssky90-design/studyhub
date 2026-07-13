@@ -5,3 +5,6 @@ __pycache__/
 
 reports/*profile*/
 reports/*profile-*/
+
+.vercel
+.env*
