@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 from dataclasses import replace
 import hashlib
 import re
+from urllib.parse import unquote, urlparse
 
 from config import FIXED_IMAGES, OG_IMAGES, SITE_NAME, SITE_URL
 from sitegen.pages import Page, RenderedFile
@@ -25,11 +26,18 @@ def render_page(page: Page, include_hero: bool = False, asset_url: str | None = 
     schema = webpage_schema(page.title, page.meta_description, page.canonical, page.breadcrumb)
     schema[0]["primaryImageOfPage"]["url"] = absolute_image_url(representative_image)
     image_context_url = asset_url or page.url
+    seeded_urls = [item["url"] for item in page.breadcrumb] + ["/"]
+    filtered_sections = filter_section_links(page.sections, page.url, seed_urls=seeded_urls)
+    brand_html = (
+        f'<span class="brand" aria-current="page">{escape(SITE_NAME)}</span>'
+        if page.url == "/"
+        else f'<a class="brand" href="/">{escape(SITE_NAME)}</a>'
+    )
     body_html = (
         f"{render_hero(page, image_context_url)}"
         f"{render_content(page)}"
         f"{render_fixed_image_stack(page.title, image_context_url)}"
-        f'<section class="content-grid">{"".join(render_link_section(heading, links) for heading, links in page.sections if links)}</section>'
+        f'<section class="content-grid">{"".join(render_link_section(heading, links) for heading, links in filtered_sections if links)}</section>'
         if include_hero
         else render_detail_page_body(page, image_context_url)
     )
@@ -45,7 +53,7 @@ def render_page(page: Page, include_hero: bool = False, asset_url: str | None = 
 <body>
   <a class="skip-link" href="#main">본문 바로가기</a>
   <header class="site-header">
-    <a class="brand" href="/">{escape(SITE_NAME)}</a>
+    {brand_html}
   </header>
   <main id="main">
     <nav class="breadcrumbs" aria-label="breadcrumb">{render_breadcrumbs(page.breadcrumb)}</nav>
@@ -64,12 +72,52 @@ def render_detail_page_body(page: Page, image_context_url: str) -> str:
     return (
         f"{render_page_header(page)}"
         f"{render_fixed_image_stack(page.title, image_context_url, class_name='detail-image-stack')}"
-        f"{render_content(page, page.sections)}"
+        f"{render_content(page, filter_section_links(page.sections, page.url, seed_urls=[item['url'] for item in page.breadcrumb] + ['/']))}"
     )
 
 
+def filter_section_links(
+    sections: list[tuple[str, list[dict[str, str]]]],
+    current_url: str,
+    seed_urls: list[str] | None = None,
+) -> list[tuple[str, list[dict[str, str]]]]:
+    current = normalized_link_target(current_url)
+    seen: set[str] = {normalized_link_target(item) for item in seed_urls or []}
+    filtered_sections = []
+    for title, links in sections:
+        filtered_links = []
+        for item in links:
+            target = normalized_link_target(item["url"])
+            if not target or target == current or target in seen:
+                continue
+            seen.add(target)
+            filtered_links.append(item)
+        filtered_sections.append((title, filtered_links))
+    return filtered_sections
+
+
+def normalized_link_target(value: str) -> str:
+    parsed = urlparse(value.strip())
+    path = parsed.path if parsed.scheme or parsed.netloc else value.split("?", 1)[0].split("#", 1)[0]
+    path = unquote(path)
+    if not path or path == "/":
+        return "/"
+    if path.endswith("/index.html"):
+        path = path[: -len("index.html")]
+    if path.endswith(".html"):
+        return "/" + path.strip("/")
+    return "/" + path.strip("/") + "/"
+
+
 def render_breadcrumbs(items: list[dict[str, str]]) -> str:
-    return "<ol>" + "".join(f'<li><a href="{escape(item["url"])}">{escape(item["name"])}</a></li>' for item in items) + "</ol>"
+    rendered = []
+    for index, item in enumerate(items):
+        name = escape(item["name"])
+        if index == len(items) - 1:
+            rendered.append(f'<li><span aria-current="page">{name}</span></li>')
+        else:
+            rendered.append(f'<li><a href="{escape(item["url"])}">{name}</a></li>')
+    return "<ol>" + "".join(rendered) + "</ol>"
 
 
 def render_link_section(title: str, links: list[dict[str, str]]) -> str:
@@ -184,9 +232,12 @@ def split_content_cards(html: str) -> list[str]:
     return [f'<article class="info-card">{part.strip()}</article>' for part in parts if part.strip()]
 
 
+MAX_RELATED_LINKS_PER_SECTION = 60
+
+
 def interleave_content_and_links(html: str, sections: list[tuple[str, list[dict[str, str]]]]) -> str:
     cards = split_content_cards(html)
-    link_bands = [render_related_link_band(heading, links[:5]) for heading, links in sections if links]
+    link_bands = [render_related_link_band(heading, links[:MAX_RELATED_LINKS_PER_SECTION]) for heading, links in sections if links]
     if not cards:
         return "".join(link_bands)
 
@@ -238,6 +289,9 @@ def sanitize_content_fragment(html: str) -> str:
     html = re.sub(r"</?(?:html|head|body)\b[^>]*>", "", html, flags=re.IGNORECASE)
     html = re.sub(r"<title\b[^>]*>.*?</title>", "", html, flags=re.IGNORECASE | re.DOTALL)
     html = re.sub(r"<meta\b[^>]*charset[^>]*>", "", html, flags=re.IGNORECASE)
+    html = re.sub(r'<div\b[^>]*style=["\'][^"\']*display\s*:\s*none[^"\']*["\'][^>]*>\s*placeholder\s*</div>', "", html, flags=re.IGNORECASE)
+    html = re.sub(r"<h1(\s[^>]*)?>", r"<h2\1>", html, flags=re.IGNORECASE)
+    html = re.sub(r"</h1>", "</h2>", html, flags=re.IGNORECASE)
     return html.strip()
 
 
@@ -463,6 +517,7 @@ def render_root_entry(root_page: Page) -> RenderedFile:
     root_url = f"{SITE_URL.rstrip('/')}/"
     page = replace(
         root_page,
+        url="/",
         canonical=root_url,
         breadcrumb=[{"name": root_page.title, "url": root_url}],
     )

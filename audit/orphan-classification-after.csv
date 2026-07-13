@@ -1,0 +1,1 @@
+page_path,page_type,expected_parent,parent_exists,parent_links_to_child,child_links_to_parent,inbound_link_count,crawl_depth,recommended_fix,requires_regeneration,template_source

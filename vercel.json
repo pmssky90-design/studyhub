@@ -1,6 +1,29 @@
 {
   "trailingSlash": true,
   "cleanUrls": false,
+  "redirects": [
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/:path*/index.html",
+      "destination": "/:path*/",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.studyhub.co.kr"
+        }
+      ],
+      "destination": "https://studyhub.co.kr/$1",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/robots.txt",

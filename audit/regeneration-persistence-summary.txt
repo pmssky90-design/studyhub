@@ -1,0 +1,9 @@
+total_html: 9612
+total_internal_links: 206932
+reachable_pages: 9612
+orphan_pages: 0
+max_depth: 5
+broken_internal_links: 0
+self_links: 1
+duplicate_source_target_links: 0
+depth_counts: {0: 1, 1: 36, 2: 314, 3: 1662, 4: 4066, 5: 3533}

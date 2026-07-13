@@ -172,7 +172,7 @@ def build_category_page(region: RegionNode, regions: dict[str, RegionNode], cate
         ("\uc0c1\uc704 \uc9c0\uc5ed", parent_category_links(region, regions, category)),
         ("\ud558\uc704 \uc9c0\uc5ed", category_links(region.children, regions, category)),
         ("\ud615\uc81c \uc9c0\uc5ed", sibling_category_links(region, regions, category)),
-        ("\uac19\uc740 \uc9c0\uc5ed \uacfc\uc678", region_primary_category_links(region, regions)),
+        ("\uac19\uc740 \uc9c0\uc5ed \uacfc\uc678", region_primary_category_links(region, regions, exclude_category=category)),
         ("\uc9c0\uc5ed \uba54\uc778", [link(region.title, region_url(region, regions))]),
     ]
     sections.extend(category_family_sections(region, regions, category))
@@ -381,9 +381,17 @@ def category_links(items: list[RegionNode], regions: dict[str, RegionNode], cate
     return [link(category_page_title(item, category), category_url(item, regions, category)) for item in items]
 
 
-def region_primary_category_links(region: RegionNode, regions: dict[str, RegionNode]) -> list[dict[str, str]]:
+def region_primary_category_links(
+    region: RegionNode,
+    regions: dict[str, RegionNode],
+    exclude_category: str | None = None,
+) -> list[dict[str, str]]:
     links = [link(region.title, region_url(region, regions))]
-    links.extend(link(category_page_title(region, item), category_url(region, regions, item)) for item in PRIMARY_CATEGORIES if item != CATEGORY_TUTOR)
+    links.extend(
+        link(category_page_title(region, item), category_url(region, regions, item))
+        for item in PRIMARY_CATEGORIES
+        if item != CATEGORY_TUTOR and item != exclude_category
+    )
     return links
 
 
@@ -589,7 +597,7 @@ def sections_for_master_page(
         ("\uc0c1\uc704 \uc9c0\uc5ed", page_links([parent_page] if parent_page else [])),
         ("\ud558\uc704 \uc9c0\uc5ed", page_links(child_pages)),
         ("\ud615\uc81c \uc9c0\uc5ed", page_links(sibling_pages)),
-        ("\uac19\uc740 \uc9c0\uc5ed \uacfc\uc678", same_region_links(region, pages)),
+        ("\uac19\uc740 \uc9c0\uc5ed \uacfc\uc678", same_region_links(region, pages, exclude_category=category)),
     ]
     sections.extend(master_category_family_sections(region, category, pages))
     if category != CATEGORY_TUTOR:
@@ -696,9 +704,15 @@ def unique_page_ids(pages: list[Page]) -> list[str]:
     return result
 
 
-def same_region_links(region: MasterRegion, pages: dict[str, Page]) -> list[dict[str, str]]:
+def same_region_links(
+    region: MasterRegion,
+    pages: dict[str, Page],
+    exclude_category: str | None = None,
+) -> list[dict[str, str]]:
     result = []
     for category in PRIMARY_CATEGORIES:
+        if category == exclude_category:
+            continue
         page = pages.get(region_category_key(region.slug, category))
         if page:
             result.append(link(page.title, page.url))
