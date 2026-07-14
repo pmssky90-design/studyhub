@@ -1,0 +1,26 @@
+# Recommended .gitignore additions - review before applying
+
+# Keep existing local platform/secret rules
+.vercel
+.env*
+
+# Temporary generation and backup artifacts
+audit/regeneration-test-output/
+audit/unstaged-review-backup/
+
+# Current review scratch outputs; keep summary files if you decide to commit them
+audit/untracked-review/status-before.txt
+audit/untracked-review/untracked-files-before.txt
+
+# Generated browser screenshots and favicon checks
+reports/*.png
+reports/**/*.png
+reports/favicon-live-check/
+
+# Raw repeated audit outputs - do not ignore all audit/ blindly until final reports are selected
+# audit/*.csv
+# audit/*.json
+# audit/live-*.html
+# audit/live-*.xml
+
+# Do NOT ignore output/, sitemap.xml, HTML files, sitegen/, or scripts/ globally.

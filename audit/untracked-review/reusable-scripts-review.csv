@@ -1,0 +1,11 @@
+path,purpose,input_paths,output_paths,hardcoded_paths,reusable,dangerous_commands,network_requests,dependencies,recommendation
+audit/full_scan.py,"SEO/site audit report, CSV, or evidence artifact",manual inspection required,manual inspection required,unknown; see file before use,no,deploy command,yes,see script file(s),possible sensitive pattern; do not stage before manual inspection
+cloudflare_build.py,root helper script,manual inspection required,manual inspection required,unknown; see file before use,yes,,not obvious,see script file(s),reusable helper script candidate
+deploy_guard.py,root helper script,manual inspection required,manual inspection required,unknown; see file before use,yes,,yes,see script file(s),reusable helper script candidate
+post_deploy_check.py,root helper script,manual inspection required,manual inspection required,unknown; see file before use,yes,,not obvious,see script file(s),reusable helper script candidate
+pre_deploy_check.py,root helper script,manual inspection required,manual inspection required,unknown; see file before use,yes,,not obvious,see script file(s),reusable helper script candidate
+reports/build_naver_seo_fix_report.py,"QA report, screenshot, or helper output",manual inspection required,manual inspection required,unknown; see file before use,yes,,not obvious,see script file(s),reusable helper script candidate
+reports/check_naver_seo_urls.py,"QA report, screenshot, or helper output",manual inspection required,manual inspection required,unknown; see file before use,yes,,yes,see script file(s),reusable helper script candidate
+reports/fix_naver_seo_pages.py,"QA report, screenshot, or helper output",manual inspection required,manual inspection required,unknown; see file before use,yes,,not obvious,see script file(s),reusable helper script candidate
+scripts,project utility script directory,manual inspection required,manual inspection required,unknown; see file before use,no,,not fully scanned for directories,see script file(s),possible sensitive pattern; do not stage before manual inspection
+seo_audit,SEO audit tooling/output directory,manual inspection required,manual inspection required,unknown; see file before use,no,,not fully scanned for directories,see script file(s),possible sensitive pattern; do not stage before manual inspection

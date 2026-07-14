@@ -1,0 +1,53 @@
+1. Repository operation documents
+Recommended commit message: docs: add deployment and verification notes
+- DEPLOYMENT_CHECKS.md
+  reason: human-readable final/operational report candidate
+  related: root documentation/report
+- deployment_complete_report.md
+  reason: human-readable final/operational report candidate
+  related: root documentation/report
+- favicon_fix_report.md
+  reason: human-readable final/operational report candidate
+  related: root documentation/report
+- favicon_validation_report.md
+  reason: human-readable final/operational report candidate
+  related: root documentation/report
+- final_platform_report.md
+  reason: human-readable final/operational report candidate
+  related: root documentation/report
+
+2. Final SEO audit reports
+Recommended commit message: docs: add final SEO audit reports
+- audit/final-root-cause-ranking.md
+  reason: human-readable final/operational report candidate
+  related: SEO/site audit report, CSV, or evidence artifact
+
+3. Reusable verification scripts
+Recommended commit message: chore: add reusable SEO verification scripts
+- cloudflare_build.py
+  reason: reusable helper script candidate
+  related: root helper script
+- deploy_guard.py
+  reason: reusable helper script candidate
+  related: root helper script
+- post_deploy_check.py
+  reason: reusable helper script candidate
+  related: root helper script
+- pre_deploy_check.py
+  reason: reusable helper script candidate
+  related: root helper script
+- reports/build_naver_seo_fix_report.py
+  reason: reusable helper script candidate
+  related: QA report, screenshot, or helper output
+- reports/check_naver_seo_urls.py
+  reason: reusable helper script candidate
+  related: QA report, screenshot, or helper output
+- reports/fix_naver_seo_pages.py
+  reason: reusable helper script candidate
+  related: QA report, screenshot, or helper output
+
+4. Operational QA reports
+Recommended commit message: docs: add operational QA reports
+- reports/naver_seo_fix_report.md
+  reason: human-readable final/operational report candidate
+  related: QA report, screenshot, or helper output

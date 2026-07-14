@@ -1,0 +1,17 @@
+path,file_role,current_project_relevance,sensitive_check,hardcoded_path,destructive_behavior,stale_content,final_decision,recommended_commit_group,evidence
+DEPLOYMENT_CHECKS.md,document,direct,no secret assignment found,yes,cloudflare,cloudflare pages|cloudflare,NEEDS_MANUAL_REVIEW,none,current markers=https://studyhub.co.kr|308
+deployment_complete_report.md,document,direct,no secret assignment found,no,none found,none found,COMMIT_NOW,deployment and SEO docs,current markers=https://studyhub.co.kr
+favicon_fix_report.md,document,direct,no secret assignment found,no,none found,9611,NEEDS_MANUAL_REVIEW,none,current markers=https://studyhub.co.kr
+favicon_validation_report.md,document,direct,no secret assignment found,no,none found,9611,NEEDS_MANUAL_REVIEW,none,current markers=https://studyhub.co.kr
+final_platform_report.md,document,direct,no secret assignment found,yes,cloudflare,"cloudflare pages|cloudflare|9,611",NEEDS_MANUAL_REVIEW,none,current markers=https://studyhub.co.kr|vercel
+audit/final-root-cause-ranking.md,document,direct,no secret assignment found,no,none found,"5,398",NEEDS_MANUAL_REVIEW,none,"current markers=9,612"
+reports/naver_seo_fix_report.md,document,direct,no secret assignment found,no,none found,none found,COMMIT_NOW,deployment and SEO docs,current markers=https://studyhub.co.kr
+cloudflare_build.py,script,possible,no secret assignment found,no,none found,none found,NEEDS_MANUAL_REVIEW,none,no current-state markers
+deploy_guard.py,script,direct,no secret assignment found,no,cloudflare,cloudflare,NEEDS_MANUAL_REVIEW,none,current markers=308
+pre_deploy_check.py,script,direct,no secret assignment found,no,none found,none found,COMMIT_NOW,reusable verification scripts,no current-state markers; py_compile passed; writes verification outputs only
+post_deploy_check.py,script,possible,no secret assignment found,no,none found,none found,COMMIT_NOW,reusable verification scripts,no current-state markers; py_compile passed; writes verification outputs only
+reports/build_naver_seo_fix_report.py,script,direct,no secret assignment found,no,none found,none found,KEEP_LOCAL,none,"no current-state markers; depends on local generated report inputs, keep local for now"
+reports/check_naver_seo_urls.py,script,direct,no secret assignment found,no,none found,none found,KEEP_LOCAL,none,"no current-state markers; depends on local generated report inputs, keep local for now"
+reports/fix_naver_seo_pages.py,script,direct,no secret assignment found,no,none found,none found,NEEDS_MANUAL_REVIEW,none,no current-state markers
+seo_audit/__init__.py,script_package,direct,SAFE_FALSE_POSITIVE only; no secret assignment found,no,none found,none found,COMMIT_NOW,reusable verification scripts,required by pre_deploy_check.py and post_deploy_check.py; py_compile passed
+seo_audit/core.py,script_package,direct,SAFE_FALSE_POSITIVE only; no secret assignment found,no,none found,none found,COMMIT_NOW,reusable verification scripts,required by pre_deploy_check.py and post_deploy_check.py; py_compile passed

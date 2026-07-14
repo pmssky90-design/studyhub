@@ -1,0 +1,5 @@
+path,pattern_types,stage_recommendation,notes
+audit/final-full-site-audit.md,token,DO_NOT_STAGE_WITHOUT_MANUAL_REVIEW,Values intentionally omitted.
+audit/full_scan.py,token,DO_NOT_STAGE_WITHOUT_MANUAL_REVIEW,Values intentionally omitted.
+scripts,token,DO_NOT_STAGE_WITHOUT_MANUAL_REVIEW,Values intentionally omitted.
+seo_audit,session|token,DO_NOT_STAGE_WITHOUT_MANUAL_REVIEW,Values intentionally omitted.

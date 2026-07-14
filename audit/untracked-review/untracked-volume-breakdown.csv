@@ -1,0 +1,7 @@
+path,file_count,total_bytes,purpose,generated,commit_recommended,ignore_recommended,deletion_recommended_later
+audit/regeneration-test-output,9614,179819238,temporary regeneration output snapshot,yes,no,yes,review first
+audit/unstaged-review-backup,2387,62332965,backup patch/status artifacts,yes,no,yes,review first
+reports,6357,1789192723,"QA reports, screenshots, and helper scripts",yes,selective,selective,review first
+verification,25,4547936,verification artifacts,yes,no,selective,review first
+seo_audit,4,95600,SEO audit helper package; needs manual review before commit,mixed,selective,selective,review first
+scripts,7,38482,utility scripts; needs selective review before commit,mixed,selective,selective,review first

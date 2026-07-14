@@ -1,0 +1,7 @@
+duplicate_group,representative,path,size_bytes,classification,delete_now
+DUP001,reports/naver_seo_after.csv,reports/naver_seo_after.csv,9328,INTENTIONAL_SNAPSHOT,no
+DUP001,reports/naver_seo_after.csv,reports/naver_seo_before.csv,9328,INTENTIONAL_SNAPSHOT,no
+DUP002,reports/studyhub-home-live-redesign-fresh.png,reports/studyhub-home-live-redesign-fresh.png,595304,GENERATED_DUPLICATE,no
+DUP002,reports/studyhub-home-live-redesign-fresh.png,reports/studyhub-home-redesign-final.png,595304,GENERATED_DUPLICATE,no
+DUP003,reports/studyhub-restored-jeju-body-2.png,reports/studyhub-restored-jeju-body-2.png,9066,GENERATED_DUPLICATE,no
+DUP003,reports/studyhub-restored-jeju-body-2.png,reports/studyhub-restored-jeju-body.png,9066,GENERATED_DUPLICATE,no
