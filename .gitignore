@@ -8,3 +8,14 @@ reports/*profile-*/
 
 .vercel
 .env*
+
+# Local audit and review artifacts
+audit/regeneration-test-output/
+audit/unstaged-review-backup/
+audit/untracked-review/status-before.txt
+audit/untracked-review/untracked-files-before.txt
+
+# Generated browser screenshots and favicon checks
+reports/*.png
+reports/**/*.png
+reports/favicon-live-check/
